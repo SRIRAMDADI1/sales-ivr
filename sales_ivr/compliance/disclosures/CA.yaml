@@ -1,0 +1,11 @@
+state: CA
+disclosures:
+  - disclosure_id: ca-rate-notice
+    text: "Premiums are based on approved rates filed with the California Department of Insurance."
+    required_before_quote_acceptance: true
+  - disclosure_id: ca-non-binding
+    text: "This quote is an estimate and is not a binding offer of insurance."
+    required_before_quote_acceptance: true
+prohibited_phrases:
+  - "guaranteed approval"
+  - "lowest price guaranteed"

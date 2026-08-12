@@ -1,0 +1,23 @@
+product_id: home-homeowners
+product_line: home
+name: Homeowners Insurance
+description: Dwelling and personal property coverage for owner-occupied homes.
+eligible_states: [CA, TX, NY, FL, IL]
+min_age: 18
+required_factors:
+  - home_value
+  - year_built
+  - coverage_tier
+tiers:
+  - tier_id: home-basic
+    name: Basic
+    base_premium_monthly: 110.0
+    coverage_limit: "$250,000 dwelling"
+  - tier_id: home-standard
+    name: Standard
+    base_premium_monthly: 155.0
+    coverage_limit: "$400,000 dwelling"
+  - tier_id: home-premium
+    name: Premium
+    base_premium_monthly: 210.0
+    coverage_limit: "$600,000 dwelling"

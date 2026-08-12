@@ -1,0 +1,10 @@
+{
+  "session_id": "sess-handoff-001",
+  "caller_phone": "15551234002",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "I need to speak to a real person about my claim.", "confidence": 0.99}
+  ],
+  "dtmf_digits": "0",
+  "caller_profile": {"zip_code": "73301", "state": "TX"}
+}

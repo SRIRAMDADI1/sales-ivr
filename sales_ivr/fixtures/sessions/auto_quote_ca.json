@@ -1,0 +1,13 @@
+{
+  "session_id": "sess-auto-quote-001",
+  "caller_phone": "15551234001",
+  "channel": "voice",
+  "language": "en-US",
+  "utterances": [
+    {"turn": 0, "text": "Hi, I'd like a quote for auto insurance.", "confidence": 0.97},
+    {"turn": 1, "text": "I drive a 2020 sedan about twelve thousand miles a year.", "confidence": 0.94},
+    {"turn": 2, "text": "Yes, that sounds good. I'll proceed.", "confidence": 0.99}
+  ],
+  "dtmf_digits": "1",
+  "caller_profile": {"zip_code": "90210", "state": "CA"}
+}

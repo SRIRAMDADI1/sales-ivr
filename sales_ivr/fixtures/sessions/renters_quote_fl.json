@@ -1,0 +1,11 @@
+{
+  "session_id": "sess-new-prospect-fl-001",
+  "caller_phone": "15559876543",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "Hi, I need a quote for renters insurance.", "confidence": 0.95},
+    {"turn": 1, "text": "Yes, proceed.", "confidence": 0.99}
+  ],
+  "dtmf_digits": "1",
+  "caller_profile": {"zip_code": "33101", "state": "FL"}
+}

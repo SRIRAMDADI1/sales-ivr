@@ -1,0 +1,11 @@
+state: NY
+disclosures:
+  - disclosure_id: ny-licensed
+    text: "Demo Insurance Co. is licensed in New York. This call may be recorded."
+    required_before_quote_acceptance: true
+  - disclosure_id: ny-estimate
+    text: "Quoted premium is an estimate pending full application review."
+    required_before_quote_acceptance: true
+prohibited_phrases:
+  - "instant binding"
+  - "no medical review required"

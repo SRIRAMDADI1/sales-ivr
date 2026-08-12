@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sales-ivr"
+version = "0.1.0"
+description = "Sales IVR platform for insurance companies (base scaffold)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.2.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "pyyaml>=6.0",
+    "openai>=1.40.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.27.0",
+]
+# Optional TelemetryBot SDK (soft-fail if missing):
+#   pip install agentelemetry
+#   # or from a local TelemetryBot checkout:
+#   # pip install -e <path-to>/packages/agentelemetry
+
+[project.scripts]
+sales-ivr = "sales_ivr.cli:main"
+sales-ivr-web = "sales_ivr.web.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sales_ivr"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

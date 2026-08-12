@@ -1,0 +1,10 @@
+state: IL
+disclosures:
+  - disclosure_id: il-privacy
+    text: "We may use information from consumer reporting agencies for underwriting."
+    required_before_quote_acceptance: true
+  - disclosure_id: il-estimate
+    text: "Premiums shown are estimates only."
+    required_before_quote_acceptance: true
+prohibited_phrases:
+  - "no credit check"

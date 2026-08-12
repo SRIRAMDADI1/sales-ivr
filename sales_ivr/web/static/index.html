@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Firstpass Quotes — a first pass at the right coverage</title>
+  <meta name="description" content="Firstpass Quotes is a conversational insurance quoting agent. Describe your situation in plain language, get a preliminary quote, and revise any detail to run a fresh pass." />
+  <meta name="theme-color" content="#eef1f4" />
+  <meta property="og:title" content="Firstpass Quotes" />
+  <meta property="og:description" content="Talk it through once. Get a first pass at your coverage, then revise any detail for a new pass." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%233a5f73'/%3E%3Cpath%20d='M22%2018h22v7H30v8h12v7H30v10h-8z'%20fill='%23f4f7f9'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <nav class="topbar">
+      <a class="wordmark" href="/">
+        <span class="mark" aria-hidden="true">F</span>
+        <span class="wordmark-text">
+          <span class="wordmark-name">Firstpass</span>
+          <span class="wordmark-sub">Quotes</span>
+        </span>
+      </a>
+      <span class="topbar-tag">Conversational quoting · CA · TX · NY · FL · IL</span>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">First pass, not final answer</p>
+        <h1>A first pass at the right coverage, in one conversation.</h1>
+        <p class="lede">
+          Tell the agent what you need in your own words — in any order, with as much or as
+          little detail as you have. Ask for a quote and every pass runs the full rating
+          pipeline. Change a fact later and we run it again.
+        </p>
+        <div class="cta-row">
+          <button id="startBtn" class="btn primary" type="button">Start my first pass</button>
+          <button id="newBtn" class="btn ghost" type="button" hidden>Start over</button>
+        </div>
+        <p class="fine">Preliminary, non-binding estimates. Chat front door until voice is live.</p>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="pass-stack">
+          <article class="pass-card back">
+            <p class="pass-label">Pass 01</p>
+            <p class="pass-figure">$142<span>/mo</span></p>
+          </article>
+          <article class="pass-card mid">
+            <p class="pass-label">Pass 02</p>
+            <p class="pass-figure">$131<span>/mo</span></p>
+          </article>
+          <article class="pass-card front">
+            <p class="pass-label">Pass 03 · current</p>
+            <p class="pass-figure">$118<span>/mo</span></p>
+            <ul class="pass-facts">
+              <li>2022 sedan</li>
+              <li>12,000 mi/yr</li>
+              <li>Auto · personal</li>
+            </ul>
+          </article>
+          <span class="sweep"></span>
+        </div>
+      </div>
+    </header>
+
+    <section class="steps" id="steps" aria-label="How Firstpass works">
+      <ol>
+        <li>
+          <span class="step-num">01</span>
+          <h3>Say it your way</h3>
+          <p>No forms and no fixed question order. Give details as they come to you.</p>
+        </li>
+        <li>
+          <span class="step-num">02</span>
+          <h3>Get a pass</h3>
+          <p>Ask for a quote and the full agent pipeline rates it end to end.</p>
+        </li>
+        <li>
+          <span class="step-num">03</span>
+          <h3>Revise freely</h3>
+          <p>Correct any fact and ask again. Each new pass replaces the summary.</p>
+        </li>
+      </ol>
+    </section>
+
+    <main class="workspace" id="workspace" hidden>
+      <section class="chat-panel" aria-label="Firstpass quote agent">
+        <div class="panel-head">
+          <h2>Quote agent</h2>
+          <span class="step-pill" id="stepPill">ready</span>
+        </div>
+        <div id="messages" class="messages" role="log" aria-live="polite"></div>
+        <form id="chatForm" class="composer">
+          <label class="sr-only" for="input">Message</label>
+          <input id="input" type="text" placeholder="Ask anything, or change a detail to run a new pass…" autocomplete="off" required />
+          <button class="btn primary" type="submit">Send</button>
+        </form>
+      </section>
+
+      <aside class="result-panel" aria-label="Your latest pass">
+        <div class="panel-head">
+          <h2>Your latest pass</h2>
+        </div>
+        <div id="resultEmpty" class="result-empty">
+          Nothing rated yet. Ask the agent for a quote and your first pass shows up here —
+          later passes replace it.
+        </div>
+        <div id="resultLoading" class="result-loading" hidden aria-live="polite" aria-busy="true">
+          <div class="loading-orb" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <p class="loading-title">Loading your quote</p>
+          <p class="loading-sub">Running a fresh pass through the rating pipeline…</p>
+          <div class="loading-bars" aria-hidden="true">
+            <div class="loading-bar"></div>
+            <div class="loading-bar short"></div>
+            <div class="loading-bar"></div>
+          </div>
+        </div>
+        <div id="resultBody" class="result-body" hidden></div>
+        <details id="jsonDetails" class="json-block" hidden>
+          <summary>Technical details (developers)</summary>
+          <pre id="sessionJson"></pre>
+        </details>
+      </aside>
+    </main>
+
+    <footer class="site-foot">
+      <p><strong>Firstpass Quotes</strong> — preliminary estimates, not an offer of insurance.</p>
+      <p>Final rates depend on underwriting, eligibility, and state requirements.</p>
+    </footer>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

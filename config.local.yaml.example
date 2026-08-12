@@ -1,0 +1,9 @@
+# Copy to config.local.yaml and fill in (gitignored).
+# This overlays config.yaml — put secrets and provider here so you don't
+# re-set them in the terminal.
+
+llm:
+  provider: "azure"
+  api_key: "your-key-here"
+  endpoint: "https://your-resource-name.openai.azure.com/"
+  deployment: "gpt-4o-mini"

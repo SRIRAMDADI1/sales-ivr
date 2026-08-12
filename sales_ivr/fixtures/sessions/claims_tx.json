@@ -1,0 +1,9 @@
+{
+  "session_id": "sess-claims-001",
+  "caller_phone": "15551234002",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "I need to file a claim after an accident.", "confidence": 0.97}
+  ],
+  "caller_profile": {"zip_code": "73301", "state": "TX"}
+}

@@ -1,0 +1,54 @@
+{
+  "customers": [
+    {
+      "customer_id": "CUST-10001",
+      "phone": "15551234001",
+      "zip_code": "90210",
+      "state": "CA",
+      "age_band": "35-44",
+      "household_size": 3,
+      "last_four_ssn": "4321",
+      "policies": [
+        {
+          "policy_id": "POL-AUTO001",
+          "product_line": "auto",
+          "status": "active",
+          "state": "CA"
+        }
+      ]
+    },
+    {
+      "customer_id": "CUST-10002",
+      "phone": "15551234002",
+      "zip_code": "73301",
+      "state": "TX",
+      "age_band": "45-54",
+      "household_size": 2,
+      "last_four_ssn": "8765",
+      "policies": [
+        {
+          "policy_id": "POL-HOME001",
+          "product_line": "home",
+          "status": "active",
+          "state": "TX"
+        },
+        {
+          "policy_id": "POL-AUTO002",
+          "product_line": "auto",
+          "status": "active",
+          "state": "TX"
+        }
+      ]
+    },
+    {
+      "customer_id": "CUST-10003",
+      "phone": "15551234003",
+      "zip_code": "10001",
+      "state": "NY",
+      "age_band": "25-34",
+      "household_size": 1,
+      "last_four_ssn": "1111",
+      "policies": []
+    }
+  ]
+}

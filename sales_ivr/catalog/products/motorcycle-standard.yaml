@@ -1,0 +1,19 @@
+product_id: motorcycle-standard
+product_line: motorcycle
+name: Motorcycle Insurance
+description: Liability and collision coverage for motorcycles.
+eligible_states: [CA, TX, FL, IL]
+min_age: 21
+required_factors:
+  - driver_age
+  - bike_year
+  - annual_mileage
+tiers:
+  - tier_id: moto-basic
+    name: Basic
+    base_premium_monthly: 45.0
+    coverage_limit: "25/50/10"
+  - tier_id: moto-standard
+    name: Standard
+    base_premium_monthly: 68.0
+    coverage_limit: "50/100/25"

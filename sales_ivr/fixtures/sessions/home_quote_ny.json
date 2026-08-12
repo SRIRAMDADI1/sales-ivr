@@ -1,0 +1,10 @@
+{
+  "session_id": "sess-home-quote-001",
+  "caller_phone": "15551234003",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "I'm looking for homeowners insurance for my house in New York.", "confidence": 0.96},
+    {"turn": 1, "text": "Yes please proceed with the quote.", "confidence": 0.98}
+  ],
+  "caller_profile": {"zip_code": "10001", "state": "NY", "household_size": 2}
+}

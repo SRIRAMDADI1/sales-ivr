@@ -1,0 +1,18 @@
+product_id: umbrella-personal
+product_line: umbrella
+name: Personal Umbrella Policy
+description: Excess liability coverage above auto and home limits.
+eligible_states: [CA, TX, NY, FL, IL]
+min_age: 21
+required_factors:
+  - underlying_auto_limit
+  - underlying_home_limit
+tiers:
+  - tier_id: umbrella-1m
+    name: $1M Umbrella
+    base_premium_monthly: 22.0
+    coverage_limit: "$1,000,000"
+  - tier_id: umbrella-2m
+    name: $2M Umbrella
+    base_premium_monthly: 35.0
+    coverage_limit: "$2,000,000"

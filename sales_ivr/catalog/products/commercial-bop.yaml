@@ -1,0 +1,19 @@
+product_id: commercial-bop
+product_line: commercial
+name: Business Owners Policy
+description: Combined property and liability for small businesses.
+eligible_states: [CA, TX, NY, IL]
+min_age: 18
+required_factors:
+  - annual_revenue
+  - employee_count
+  - industry_code
+tiers:
+  - tier_id: bop-basic
+    name: Basic BOP
+    base_premium_monthly: 145.0
+    coverage_limit: "$500,000 liability"
+  - tier_id: bop-standard
+    name: Standard BOP
+    base_premium_monthly: 220.0
+    coverage_limit: "$1,000,000 liability"

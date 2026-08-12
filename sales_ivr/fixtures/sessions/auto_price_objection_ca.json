@@ -1,0 +1,12 @@
+{
+  "session_id": "sess-price-objection-001",
+  "caller_phone": "15551234001",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "I want an auto insurance quote.", "confidence": 0.96},
+    {"turn": 1, "text": "I drive a 2018 SUV about twenty thousand miles a year.", "confidence": 0.94},
+    {"turn": 2, "text": "That's too expensive.", "confidence": 0.98}
+  ],
+  "dtmf_digits": "1",
+  "caller_profile": {"zip_code": "90210", "state": "CA"}
+}

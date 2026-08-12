@@ -1,0 +1,9 @@
+{
+  "session_id": "sess-policy-change-001",
+  "caller_phone": "15551234001",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "I need to change my policy and add a driver.", "confidence": 0.96}
+  ],
+  "caller_profile": {"zip_code": "90210", "state": "CA"}
+}

@@ -1,0 +1,11 @@
+state: TX
+disclosures:
+  - disclosure_id: tx-availability
+    text: "Coverage availability and rates may vary based on underwriting guidelines."
+    required_before_quote_acceptance: true
+  - disclosure_id: tx-non-binding
+    text: "This is a preliminary quote subject to verification."
+    required_before_quote_acceptance: true
+prohibited_phrases:
+  - "no risk"
+  - "everyone qualifies"

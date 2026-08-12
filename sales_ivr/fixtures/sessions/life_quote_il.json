@@ -1,0 +1,11 @@
+{
+  "session_id": "sess-life-il-001",
+  "caller_phone": "15551112222",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "I'm interested in term life insurance.", "confidence": 0.94},
+    {"turn": 1, "text": "I am 40 years old.", "confidence": 0.93},
+    {"turn": 2, "text": "Sounds good, I'll take it.", "confidence": 0.98}
+  ],
+  "caller_profile": {"zip_code": "60601", "state": "IL"}
+}

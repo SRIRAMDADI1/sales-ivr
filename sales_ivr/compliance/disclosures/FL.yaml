@@ -1,0 +1,10 @@
+state: FL
+disclosures:
+  - disclosure_id: fl-hurricane
+    text: "Property policies may exclude or limit hurricane and flood damage."
+    required_before_quote_acceptance: true
+  - disclosure_id: fl-non-binding
+    text: "This quote is non-binding until application is accepted."
+    required_before_quote_acceptance: true
+prohibited_phrases:
+  - "full hurricane coverage included"

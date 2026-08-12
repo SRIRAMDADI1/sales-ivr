@@ -1,0 +1,22 @@
+product_id: renters-standard
+product_line: renters
+name: Renters Insurance
+description: Personal property and liability coverage for renters.
+eligible_states: [CA, TX, NY, FL, IL]
+min_age: 18
+required_factors:
+  - personal_property_value
+  - coverage_tier
+tiers:
+  - tier_id: renters-basic
+    name: Basic
+    base_premium_monthly: 18.0
+    coverage_limit: "$20,000 personal property"
+  - tier_id: renters-standard
+    name: Standard
+    base_premium_monthly: 28.0
+    coverage_limit: "$40,000 personal property"
+  - tier_id: renters-premium
+    name: Premium
+    base_premium_monthly: 42.0
+    coverage_limit: "$75,000 personal property"

@@ -1,0 +1,9 @@
+{
+  "session_id": "sess-billing-001",
+  "caller_phone": "15551234002",
+  "channel": "voice",
+  "utterances": [
+    {"turn": 0, "text": "I have a question about my billing and payment.", "confidence": 0.95}
+  ],
+  "caller_profile": {"zip_code": "73301", "state": "TX"}
+}

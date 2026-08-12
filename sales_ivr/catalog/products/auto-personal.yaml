@@ -1,0 +1,23 @@
+product_id: auto-personal
+product_line: auto
+name: Personal Auto Insurance
+description: Standard personal automobile coverage for private passenger vehicles.
+eligible_states: [CA, TX, NY, FL, IL]
+min_age: 18
+required_factors:
+  - driver_age
+  - vehicle_year
+  - annual_mileage
+tiers:
+  - tier_id: auto-basic
+    name: Basic
+    base_premium_monthly: 89.0
+    coverage_limit: "25/50/25"
+  - tier_id: auto-standard
+    name: Standard
+    base_premium_monthly: 129.0
+    coverage_limit: "50/100/50"
+  - tier_id: auto-premium
+    name: Premium
+    base_premium_monthly: 179.0
+    coverage_limit: "100/300/100"

@@ -61,7 +61,7 @@ class AuditEntry(BaseModel):
 
 
 class LLMUsage(BaseModel):
-    """Token/latency telemetry for one LLM call — foundation for TelemetryBot."""
+    """Token/latency record for one LLM call."""
 
     agent_name: str
     model: str

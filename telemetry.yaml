@@ -1,6 +1,0 @@
-# Optional TelemetryBot collector (app soft-fails if unreachable / SDK missing)
-collector_url: http://127.0.0.1:8100
-project_id: sales-ivr
-project_slug: sales-ivr
-api_key: change-me
-enabled: false

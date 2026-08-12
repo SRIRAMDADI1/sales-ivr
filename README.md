@@ -3,9 +3,6 @@
 Insurance sales IVR platform driven by **real LLM agents** (Azure OpenAI by default),
 with tools for CRM, catalog, pricing, and compliance.
 
-Optional: token usage can be flushed to a TelemetryBot collector when `telemetry.yaml`
-points at a running collector and the `agentelemetry` SDK is installed (soft-fail otherwise).
-
 ## Quick start
 
 ```powershell
@@ -133,15 +130,6 @@ conversation active after quoting. When the customer requests a quote or changes
 asks for a revision, it builds a fresh session JSON and reruns the complete agent pipeline.
 
 Public deploy (**no Docker**): [WEB.md](WEB.md)
-
-## Optional telemetry
-
-`sales_ivr/telemetry.py` soft-fails if the SDK or collector is unavailable. To enable:
-
-1. Install a TelemetryBot-compatible `agentelemetry` package into this venv.
-2. Point `telemetry.yaml` at your collector (`collector_url`, `api_key`, `project_id`).
-
-Without that, quoting and chat still work normally.
 
 ## Architecture
 

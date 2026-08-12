@@ -22,11 +22,6 @@ from sales_ivr.models import CallSession, CallerProfile, CallerUtterance, IVRSta
 from sales_ivr.models.enums import CallChannel
 from sales_ivr.orchestrator import run_session
 from sales_ivr.runtime import clear_resource_cache
-from sales_ivr.telemetry import (
-    emit_conversation_usage,
-    emit_state_telemetry,
-    telemetry_run,
-)
 
 
 SUPPORTED_STATES = frozenset({"CA", "TX", "NY", "FL", "IL"})
@@ -172,15 +167,6 @@ def run_conversation_agent(chat: ChatSession) -> ConversationTurn:
     )
     if result.usage:
         chat.conversation_usage.append(result.usage.model_dump(mode="json"))
-        emit_conversation_usage(
-            agent_name="FirstpassConversationAgent",
-            model=result.usage.model,
-            prompt_tokens=result.usage.prompt_tokens,
-            completion_tokens=result.usage.completion_tokens,
-            total_tokens=result.usage.total_tokens,
-            latency_ms=result.usage.latency_ms,
-            finish_reason=result.usage.finish_reason,
-        )
     try:
         return ConversationTurn.model_validate(parse_json_content(result.content))
     except (json.JSONDecodeError, ValidationError):
@@ -200,15 +186,6 @@ def run_conversation_agent(chat: ChatSession) -> ConversationTurn:
         )
         if repair.usage:
             chat.conversation_usage.append(repair.usage.model_dump(mode="json"))
-            emit_conversation_usage(
-                agent_name="FirstpassConversationAgent",
-                model=repair.usage.model,
-                prompt_tokens=repair.usage.prompt_tokens,
-                completion_tokens=repair.usage.completion_tokens,
-                total_tokens=repair.usage.total_tokens,
-                latency_ms=repair.usage.latency_ms,
-                finish_reason=repair.usage.finish_reason,
-            )
         try:
             return ConversationTurn.model_validate(parse_json_content(repair.content))
         except (json.JSONDecodeError, ValidationError) as exc:
@@ -359,13 +336,7 @@ def run_pipeline_for_chat(chat: ChatSession) -> dict[str, Any]:
     clear_resource_cache()
     reset_llm_client()
     call = _build_call_session(chat)
-    with telemetry_run(
-        external_id=f"{chat.session_id}:quote",
-        channel="web",
-        metadata={"source": "web_chat_pipeline", "chat_session_id": chat.session_id},
-    ) as tel_run:
-        result = _coerce_state(run_session(build_initial_state(call)))
-        emit_state_telemetry(result, run=tel_run)
+    result = _coerce_state(run_session(build_initial_state(call)))
     payload = _build_pipeline_payload(result, call)
 
     try:
@@ -390,14 +361,7 @@ def handle_user_message(chat: ChatSession, text: str) -> dict[str, Any]:
     chat.messages.append({"role": "user", "content": text})
     pipeline_pending = False
     try:
-        with telemetry_run(
-            external_id=f"{chat.session_id}:turn:{len(chat.messages)}",
-            channel="web",
-            metadata={"source": "web_chat_turn", "chat_session_id": chat.session_id},
-        ) as tel_run:
-            turn = run_conversation_agent(chat)
-            if tel_run is not None:
-                tel_run.outcome = "conversation_turn"
+        turn = run_conversation_agent(chat)
         _apply_turn(chat, turn)
         reply = turn.reply
         if turn.run_pipeline:

@@ -10,7 +10,6 @@ from sales_ivr.llm import reset_llm_client
 from sales_ivr.models import IVRState
 from sales_ivr.orchestrator import run_session
 from sales_ivr.runtime import clear_resource_cache
-from sales_ivr.telemetry import emit_state_telemetry, telemetry_run
 
 
 def _coerce_state(result: IVRState | dict) -> IVRState:
@@ -84,13 +83,7 @@ def main() -> None:
     fixtures_dir = resolve_path(config, config.paths.fixtures_dir)
     fixture_path = fixtures_dir / args.fixture
     session = load_session_fixture(fixture_path)
-    with telemetry_run(
-        external_id=session.session_id,
-        channel="cli",
-        metadata={"fixture": args.fixture},
-    ) as run:
-        result = _coerce_state(run_session(build_initial_state(session)))
-        emit_state_telemetry(result, run=run)
+    result = _coerce_state(run_session(build_initial_state(session)))
 
     if args.json:
         print(json.dumps(result.model_dump(mode="json"), indent=2))

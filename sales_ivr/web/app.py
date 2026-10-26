@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -29,6 +30,7 @@ class ChatStartResponse(BaseModel):
 class ChatMessageRequest(BaseModel):
     session_id: str
     message: str = Field(min_length=1, max_length=2000)
+    channel: Literal["web_chat", "voice"] | None = None
 
 
 class ChatQuoteRequest(BaseModel):
@@ -41,8 +43,10 @@ def health() -> dict[str, str]:
 
 
 @app.post("/api/chat/start", response_model=ChatStartResponse)
-def chat_start() -> ChatStartResponse:
-    chat = create_chat()
+def chat_start(
+    channel: Literal["web_chat", "voice"] = Query(default="web_chat"),
+) -> ChatStartResponse:
+    chat = create_chat(channel=channel)
     return ChatStartResponse(
         session_id=chat.session_id,
         reply=chat.messages[-1]["content"],
@@ -55,7 +59,7 @@ def chat_message(body: ChatMessageRequest) -> dict:
     chat = get_chat(body.session_id)
     if chat is None:
         raise HTTPException(status_code=404, detail="Chat session not found. Start a new chat.")
-    return handle_user_message(chat, body.message)
+    return handle_user_message(chat, body.message, channel=body.channel)
 
 
 @app.post("/api/chat/quote")

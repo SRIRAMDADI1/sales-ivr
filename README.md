@@ -129,6 +129,10 @@ The web agent accepts details in any order, answers open-ended messages, and kee
 conversation active after quoting. When the customer requests a quote or changes details and
 asks for a revision, it builds a fresh session JSON and reruns the complete agent pipeline.
 
+**Talk with voice** uses the browser microphone and speaker (Chrome or Edge, on localhost
+or HTTPS). No extra speech key is required. The same quote agent answers, then reads the
+reply aloud. Tap the orb to interrupt and talk over it.
+
 Public deploy (Kubernetes): [WEB.md](WEB.md)
 
 ## Coverage

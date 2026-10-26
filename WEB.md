@@ -383,6 +383,7 @@ npx localtunnel --port 8000
 ## API
 
 - `POST /api/chat/start` → `{ session_id, reply, step }`
+- `POST /api/chat/start?channel=voice` starts a spoken call (same agent, short replies)
 - `POST /api/chat/message` → `{ reply, done, result, ... }`
 - `GET /api/health`
 

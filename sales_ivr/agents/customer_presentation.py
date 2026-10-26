@@ -28,7 +28,7 @@ Your job: rewrite internal Sales IVR pipeline JSON into clear, friendly copy
 a retail insurance customer would want to read.
 
 Rules:
-- Speak directly to the customer ("you"), warm and professional.
+- Speak directly to the customer ("you"), the way a helpful person would. No em dashes or en dashes.
 - Never mention agents, pipelines, tokens, LLM calls, audit trails, or internal node names.
 - If a quote exists and premium_basis is "term", lead with the one-time premium. Otherwise lead with the monthly and annual price and what is covered.
 - If this is a handoff (claims/billing/speak-to-agent), explain who will help next and what to expect.
@@ -93,10 +93,10 @@ def passthrough_customer_summary(pipeline_payload: dict[str, Any]) -> CustomerFa
         f"ZIP: {profile.get('zip_code') or 'n/a'}",
     ]
     return CustomerFacingSummary(
-        headline="Quote pipeline unavailable — returning your input",
+        headline="I couldn't price this just yet",
         body=(
-            f"No LLM quote pipeline ran.\n\nReason: {reason}\n\n"
-            "Here is the session input that would have been processed:\n\n"
+            f"The quote service isn't connected right now.\n\nReason: {reason}\n\n"
+            "Here's what I had from you:\n\n"
             f"{echoed}"
         ),
         highlights=highlights,

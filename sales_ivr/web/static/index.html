@@ -3,65 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Firstpass Quotes — a first pass at the right coverage</title>
+  <title>Firstpass Quotes, a first look at the right coverage</title>
   <meta name="google-site-verification" content="8xQ_QPU-uMGIRCOQVx3glfXYrcO190-TbAm2e-0GwUk" />
-  <meta name="description" content="Firstpass Quotes is a conversational insurance quoting agent. Describe your situation in plain language, get a preliminary quote, and revise any detail to run a fresh pass." />
-  <meta name="theme-color" content="#eef1f4" />
+  <meta name="description" content="Firstpass Quotes helps you talk through coverage and get an early price. Share what you know, in any order, and change a detail whenever you want a new quote." />
+  <meta name="theme-color" content="#f3efe8" />
   <meta property="og:title" content="Firstpass Quotes" />
-  <meta property="og:description" content="Talk it through once. Get a first pass at your coverage, then revise any detail for a new pass." />
+  <meta property="og:description" content="Talk it through once. Get an early price, then change any detail and I'll quote it again." />
   <meta property="og:type" content="website" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%233a5f73'/%3E%3Cpath%20d='M22%2018h22v7H30v8h12v7H30v10h-8z'%20fill='%23f4f7f9'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='16'%20fill='%231f4a42'/%3E%3Cpath%20d='M20%2038c8-2%2012-10%2012-18%206%208%2010%2014%2010%2022a12%2012%200%200%201-22%204z'%20fill='%23f6f1e8'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,620&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css?v=look2" />
 </head>
 <body>
   <div class="page">
     <nav class="topbar">
       <a class="wordmark" href="/">
-        <span class="mark" aria-hidden="true">F</span>
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 16.5c3.2-.8 4.8-4 4.8-7.2 2.4 3.2 4 5.6 4 8.6a4.6 4.6 0 0 1-8.8 1.4z"/></svg>
+        </span>
         <span class="wordmark-text">
           <span class="wordmark-name">Firstpass</span>
           <span class="wordmark-sub">Quotes</span>
         </span>
       </a>
-      <span class="topbar-tag">Conversational quoting · 50 states + D.C.</span>
+      <span class="topbar-tag">All 50 states and D.C.</span>
     </nav>
 
     <header class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">First pass, not final answer</p>
-        <h1>A first pass at the right coverage, in one conversation.</h1>
+        <p class="eyebrow">A first look, not the final price</p>
+        <h1>Let's find coverage that fits, in one conversation.</h1>
         <p class="lede">
-          Tell the agent what you need in your own words — in any order, with as much or as
-          little detail as you have. Ask for a quote and every pass runs the full rating
-          pipeline. Change a fact later and we run it again.
+          Tell me what you need, in your own words. Share as much or as little as you have,
+          in any order. When you want a price, just ask. If something changes later, tell me
+          and I'll price it again.
         </p>
         <div class="cta-row">
-          <button id="startBtn" class="btn primary" type="button">Start my first pass</button>
+          <button id="startBtn" class="btn primary" type="button">Start a quote</button>
+          <button id="voiceBtn" class="btn ghost" type="button">Talk with me</button>
           <button id="newBtn" class="btn ghost" type="button" hidden>Start over</button>
         </div>
-        <p class="fine">Preliminary, non-binding estimates. Chat front door until voice is live.</p>
+        <p class="fine">These are early estimates, not a final offer. You can type, or we can talk.</p>
       </div>
 
       <div class="hero-visual" aria-hidden="true">
         <div class="pass-stack">
           <article class="pass-card back">
-            <p class="pass-label">Pass 01</p>
+            <p class="pass-label">Earlier quote</p>
             <p class="pass-figure">$142<span>/mo</span></p>
           </article>
           <article class="pass-card mid">
-            <p class="pass-label">Pass 02</p>
+            <p class="pass-label">Last quote</p>
             <p class="pass-figure">$131<span>/mo</span></p>
           </article>
           <article class="pass-card front">
-            <p class="pass-label">Pass 03 · current</p>
+            <p class="pass-label">Current quote</p>
             <p class="pass-figure">$118<span>/mo</span></p>
             <ul class="pass-facts">
               <li>2022 sedan</li>
               <li>12,000 mi/yr</li>
-              <li>Auto · personal</li>
+              <li>Personal auto</li>
             </ul>
           </article>
           <span class="sweep"></span>
@@ -74,49 +77,69 @@
         <li>
           <span class="step-num">01</span>
           <h3>Say it your way</h3>
-          <p>No forms and no fixed question order. Give details as they come to you.</p>
+          <p>No forms. Tell me the details in whatever order they come to you.</p>
         </li>
         <li>
           <span class="step-num">02</span>
-          <h3>Get a pass</h3>
-          <p>Ask for a quote and the full agent pipeline rates it end to end.</p>
+          <h3>Get a price</h3>
+          <p>Ask for a quote and I'll price it from what you told me.</p>
         </li>
         <li>
           <span class="step-num">03</span>
-          <h3>Revise freely</h3>
-          <p>Correct any fact and ask again. Each new pass replaces the summary.</p>
+          <h3>Change your mind</h3>
+          <p>Fix anything and ask again. The new quote replaces the old one.</p>
         </li>
       </ol>
     </section>
 
     <main class="workspace" id="workspace" hidden>
-      <section class="chat-panel" aria-label="Firstpass quote agent">
+      <section class="chat-panel" aria-label="Chat with Firstpass">
         <div class="panel-head">
-          <h2>Quote agent</h2>
-          <span class="step-pill" id="stepPill">ready</span>
+          <h2>Chat</h2>
+          <span class="step-pill" id="stepPill">Ready</span>
         </div>
         <div id="messages" class="messages" role="log" aria-live="polite"></div>
+        <div id="voiceStage" class="voice-stage" hidden>
+          <p id="voiceStatus" class="voice-status" aria-live="polite">Ready</p>
+          <button id="voiceOrb" class="voice-orb" type="button" aria-label="Talk, or tap to interrupt">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3z"></path>
+              <path d="M6 11a1 1 0 1 0-2 0 8 8 0 0 0 7 7.93V21H9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-2v-2.07A8 8 0 0 0 20 11a1 1 0 1 0-2 0 6 6 0 0 1-12 0z"></path>
+            </svg>
+          </button>
+          <p id="voiceCaption" class="voice-caption" aria-live="polite"></p>
+          <div class="voice-actions">
+            <button id="voiceEnd" class="btn ghost" type="button">End voice</button>
+            <button id="voiceType" class="btn ghost" type="button">Type instead</button>
+          </div>
+          <p class="voice-hint">Talk the way you normally would. I'll wait until you pause. If you need a sample number, try 555-123-4001.</p>
+        </div>
         <form id="chatForm" class="composer">
+          <button id="voiceToggle" class="icon-btn" type="button" aria-label="Talk with voice">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3z"></path>
+              <path d="M6 11a1 1 0 1 0-2 0 8 8 0 0 0 7 7.93V21H9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-2v-2.07A8 8 0 0 0 20 11a1 1 0 1 0-2 0 6 6 0 0 1-12 0z"></path>
+            </svg>
+          </button>
           <label class="sr-only" for="input">Message</label>
-          <input id="input" type="text" placeholder="Ask anything, or change a detail to run a new pass…" autocomplete="off" required />
+          <input id="input" type="text" placeholder="Ask me anything, or tell me what to change." autocomplete="off" required />
           <button class="btn primary" type="submit">Send</button>
         </form>
       </section>
 
-      <aside class="result-panel" aria-label="Your latest pass">
+      <aside class="result-panel" aria-label="Your quote">
         <div class="panel-head">
-          <h2>Your latest pass</h2>
+          <h2>Your quote</h2>
         </div>
         <div id="resultEmpty" class="result-empty">
-          Nothing rated yet. Ask the agent for a quote and your first pass shows up here —
-          later passes replace it.
+          Nothing here yet. Ask for a quote and it will show up in this spot. A new quote replaces the old one.
         </div>
         <div id="resultLoading" class="result-loading" hidden aria-live="polite" aria-busy="true">
           <div class="loading-orb" aria-hidden="true">
             <span></span><span></span><span></span>
           </div>
-          <p class="loading-title">Loading your quote</p>
-          <p class="loading-sub">Running a fresh pass through the rating pipeline…</p>
+          <p class="loading-title">Putting your quote together</p>
+          <p class="loading-sub">This usually takes a few seconds.</p>
           <div class="loading-bars" aria-hidden="true">
             <div class="loading-bar"></div>
             <div class="loading-bar short"></div>
@@ -125,17 +148,18 @@
         </div>
         <div id="resultBody" class="result-body" hidden></div>
         <details id="jsonDetails" class="json-block" hidden>
-          <summary>Technical details (developers)</summary>
+          <summary>For developers</summary>
           <pre id="sessionJson"></pre>
         </details>
       </aside>
     </main>
 
     <footer class="site-foot">
-      <p><strong>Firstpass Quotes</strong> — preliminary estimates, not an offer of insurance.</p>
-      <p>Final rates depend on underwriting, eligibility, and state requirements.</p>
+      <p><strong>Firstpass Quotes</strong> gives you an early estimate, not an offer of insurance.</p>
+      <p>The final price depends on underwriting, whether you qualify, and your state's rules.</p>
     </footer>
   </div>
+  <script src="/static/voice.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>

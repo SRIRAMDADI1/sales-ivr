@@ -49,6 +49,7 @@ class ConversationTurn(BaseModel):
 @dataclass
 class ChatSession:
     session_id: str
+    channel: str = "web_chat"
     phone: str | None = None
     state: str | None = None
     zip_code: str | None = None
@@ -122,14 +123,27 @@ Conversation rules:
 - After a quote, keep conversing. Answer questions, accept corrections, and rerun when asked.
 - Do not claim a quote was calculated in `reply`; the pipeline result will be shown separately.
 - Do not invent customer facts. Null means no new value was learned.
+- Write reply the way a helpful person would talk. No em dashes, no en dashes, and no jargon such as pipeline, pass, or agent.
 - Return ONLY one JSON object matching the supplied schema.
+
+When the channel is voice, the customer is speaking and your reply is read aloud:
+- Use one to three short spoken sentences. No markdown, bullets, asterisks, or URLs.
+- Ask at most one question, and do not tell them to look at a screen or a side panel.
+- Say money as words, like "about one hundred eighteen dollars a month".
+- When you repeat a phone number, say the digits with pauses so they are easy to check.
 """
 
 
 def _conversation_messages(chat: ChatSession) -> list[ChatMessage]:
     schema = ConversationTurn.model_json_schema()
+    voice_note = ""
+    if chat.channel == "voice":
+        voice_note = (
+            "\n\nThis turn is a live voice call. Follow the voice rules above. "
+            "The reply field is spoken out loud, so write it for the ear."
+        )
     system = (
-        f"{CONVERSATION_SYSTEM}\n\n"
+        f"{CONVERSATION_SYSTEM}{voice_note}\n\n"
         f"Current normalized state:\n{json.dumps(chat.context(), default=str)}\n\n"
         f"Output schema:\n{json.dumps(schema)}"
     )
@@ -214,16 +228,27 @@ def _next_quote_revision(chat: ChatSession) -> int:
     return len(chat.quote_history) + (2 if chat.pipeline_result is not None else 1)
 
 
-def create_chat() -> ChatSession:
-    chat = ChatSession(session_id=str(uuid.uuid4()))
-    welcome = (
-        "Welcome to Firstpass Quotes. I’m your AI quote agent, and this is your first pass—"
-        "tell me what you need in your own words. Coverage is available in all 50 states and "
-        "Washington, D.C. You can give details in any order, ask questions, or change "
-        "information after I prepare a quote.\n\n"
-        "When you’re ready, ask me to run a pass on your quote. "
-        "Demo tip: 555-123-4001 is an existing customer."
-    )
+TEXT_WELCOME = (
+    "Welcome to Firstpass Quotes. I'm here to help you get a first look at coverage. "
+    "Tell me what you need, in your own words. We cover all 50 states and Washington, D.C. "
+    "You can share details in any order, ask questions, or change something after I put a quote together.\n\n"
+    "When you want a price, just ask. "
+    "If you're trying this out, 555-123-4001 belongs to an existing customer."
+)
+
+VOICE_WELCOME = (
+    "Hi, I'm the Firstpass quote assistant. "
+    "Talk to me the way you would talk to a person. "
+    "Tell me what coverage you need, and I'll ask if I'm missing anything. "
+    "What can I help you with?"
+)
+
+
+def create_chat(channel: str = "web_chat") -> ChatSession:
+    if channel not in ("web_chat", "voice"):
+        raise ValueError(f"Unsupported channel: {channel}")
+    chat = ChatSession(session_id=str(uuid.uuid4()), channel=channel)
+    welcome = VOICE_WELCOME if channel == "voice" else TEXT_WELCOME
     chat.messages.append({"role": "assistant", "content": welcome})
     _SESSIONS[chat.session_id] = chat
     return chat
@@ -261,7 +286,7 @@ def _build_call_session(chat: ChatSession) -> CallSession:
     return CallSession(
         session_id=f"web-{chat.session_id[:8]}-r{_next_quote_revision(chat)}",
         caller_phone=phone,
-        channel=CallChannel.WEB_CHAT,
+        channel=CallChannel.VOICE if chat.channel == "voice" else CallChannel.WEB_CHAT,
         language="en-US",
         utterances=utterances,
         dtmf_digits="1",
@@ -344,9 +369,80 @@ def run_pipeline_for_chat(chat: ChatSession) -> dict[str, Any]:
     return payload
 
 
-def handle_user_message(chat: ChatSession, text: str) -> dict[str, Any]:
+def speak_money(amount: float) -> str:
+    """Say a dollar amount so text-to-speech does not read the decimal point."""
+
+    cents_total = int(round(float(amount) * 100))
+    dollars, cents = divmod(abs(cents_total), 100)
+    dollar_unit = "dollar" if dollars == 1 else "dollars"
+    if cents == 0:
+        spoken = f"{dollars} {dollar_unit}"
+    else:
+        cent_unit = "cent" if cents == 1 else "cents"
+        spoken = f"{dollars} {dollar_unit} and {cents} {cent_unit}"
+    if cents_total < 0:
+        return f"negative {spoken}"
+    return spoken
+
+
+def _spoken_sentences(text: str, limit: int = 2) -> str:
+    cleaned = re.sub(r"\s+", " ", text or "").strip()
+    cleaned = re.sub(r"[*_`#]", "", cleaned)
+    parts = re.findall(r"[^.!?]+[.!?]+|[^.!?]+$", cleaned)
+    kept = [part.strip() for part in parts if part.strip()][:limit]
+    return " ".join(kept)
+
+
+def spoken_quote_reply(result: dict[str, Any]) -> str:
+    """Short spoken summary of a finished quote pass."""
+
+    summary = result.get("customer_summary") or {}
+    quote = result.get("quote") or {}
+    handoff = result.get("handoff") or {}
+    headline = _spoken_sentences(str(summary.get("headline") or "Your quote is ready."), 1)
+    if quote and "unavailable" not in headline.lower():
+        monthly = float(quote.get("monthly") or 0)
+        if quote.get("premium_basis") == "term":
+            price = f"The estimated one-time premium is {speak_money(monthly)}."
+        else:
+            annual = float(quote.get("annual") or 0)
+            price = (
+                f"The estimated premium is {speak_money(monthly)} a month, "
+                f"or {speak_money(annual)} a year."
+            )
+        detail = _spoken_sentences(str(summary.get("body") or quote.get("summary") or ""), 1)
+        return re.sub(
+            r"\s+",
+            " ",
+            (
+                f"{headline} {price} {detail} "
+                "This is a preliminary estimate, not a final offer. "
+                "You can change any detail and ask me to run it again."
+            ),
+        ).strip()
+    if handoff:
+        queue = str(handoff.get("queue") or "a specialist").replace("_", " ")
+        detail = _spoken_sentences(str(handoff.get("summary") or ""), 1)
+        return f"I'll connect you with {queue}. {detail}".strip()
+    if "unavailable" in headline.lower():
+        return (
+            "I couldn't finish a priced quote just now. "
+            "You can keep talking, and we can try again."
+        )
+    detail = _spoken_sentences(str(summary.get("body") or ""), 2)
+    return f"{headline} {detail}".strip()
+
+
+def handle_user_message(
+    chat: ChatSession,
+    text: str,
+    *,
+    channel: str | None = None,
+) -> dict[str, Any]:
     """Run one open-ended agent turn. Quote pipeline runs separately when pending."""
 
+    if channel in ("web_chat", "voice"):
+        chat.channel = channel
     text = (text or "").strip()
     chat.messages.append({"role": "user", "content": text})
     pipeline_pending = False
@@ -357,18 +453,30 @@ def handle_user_message(chat: ChatSession, text: str) -> dict[str, Any]:
         if turn.run_pipeline:
             missing = _missing_quote_fields(chat)
             if missing:
-                reply = (
-                    f"I can prepare that quote once I have your {', '.join(missing)}. "
-                    "You can send those details in any order."
-                )
+                if chat.channel == "voice":
+                    reply = (
+                        "I can price that once I have your "
+                        f"{', '.join(missing)}. You can say them in any order."
+                    )
+                else:
+                    reply = (
+                        f"I can prepare that quote once I have your {', '.join(missing)}. "
+                        "You can send those details in any order."
+                    )
             else:
                 pipeline_pending = True
     except RuntimeError:
-        reason = get_llm_unavailable_reason() or "the configured language model is unavailable"
-        reply = (
-            "I can’t run the conversational quote agent right now. "
-            f"Reason: {reason} Restart the app after restoring the Azure model connection."
-        )
+        if chat.channel == "voice":
+            reply = (
+                "I can't reach the quote assistant right now. "
+                "Please try again in a moment."
+            )
+        else:
+            reason = get_llm_unavailable_reason() or "the configured language model is unavailable"
+            reply = (
+                "I can’t run the conversational quote agent right now. "
+                f"Reason: {reason} Restart the app after restoring the Azure model connection."
+            )
 
     chat.messages.append({"role": "assistant", "content": reply})
     return {
@@ -413,7 +521,10 @@ def run_pending_quote(chat: ChatSession) -> dict[str, Any]:
     chat.pipeline_result = updated_result
     updated_result["conversation_context"] = chat.context()
     # Keep chat history short; the right-hand panel owns the full customer summary.
-    reply = "Your quote pass is ready — the summary is on the right."
+    if chat.channel == "voice":
+        reply = spoken_quote_reply(updated_result)
+    else:
+        reply = "Your quote is ready. The summary is on the right."
     chat.messages.append({"role": "assistant", "content": reply})
     return {
         "session_id": chat.session_id,

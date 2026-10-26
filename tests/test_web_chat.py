@@ -5,6 +5,8 @@ from sales_ivr.web.chat_service import (
     create_chat,
     handle_user_message,
     run_pending_quote,
+    speak_money,
+    spoken_quote_reply,
 )
 
 
@@ -162,3 +164,72 @@ def test_pipeline_request_is_blocked_until_required_context_exists(monkeypatch):
     assert "phone number" in out["reply"]
     assert "state" in out["reply"]
     assert "ZIP code" in out["reply"]
+
+
+def test_speak_money_reads_dollars_and_cents():
+    assert speak_money(1) == "1 dollar"
+    assert speak_money(123.84) == "123 dollars and 84 cents"
+    assert speak_money(10.5) == "10 dollars and 50 cents"
+
+
+def test_voice_session_speaks_the_quote_and_marks_the_call_channel(monkeypatch):
+    chat = create_chat(channel="voice")
+    assert "What can I help you with?" in chat.messages[-1]["content"]
+    monkeypatch.setattr(
+        chat_service,
+        "run_conversation_agent",
+        lambda _: ConversationTurn(
+            reply="I have what I need. I'll price auto coverage for you.",
+            phone="555-123-4001",
+            state="CA",
+            zip_code="90210",
+            insurance_need="Personal auto insurance",
+            quote_details="2020 sedan, 12000 miles a year",
+            run_pipeline=True,
+        ),
+    )
+    monkeypatch.setattr(
+        chat_service,
+        "run_pipeline_for_chat",
+        lambda current: _result(118.4, current.quote_details or ""),
+    )
+
+    pending = handle_user_message(chat, "Quote my car", channel="voice")
+    assert pending["pipeline_pending"] is True
+    assert chat.channel == "voice"
+
+    out = run_pending_quote(chat)
+    assert _build_call_session(chat).channel.value == "voice"
+    assert "118 dollars and 40 cents" in out["reply"]
+    assert "a month" in out["reply"]
+    assert "on the right" not in out["reply"].lower()
+    assert "preliminary estimate" in out["reply"].lower()
+
+
+def test_voice_start_endpoint_uses_a_spoken_greeting():
+    from fastapi.testclient import TestClient
+
+    from sales_ivr.web.app import app
+
+    client = TestClient(app)
+    voice = client.post("/api/chat/start?channel=voice")
+    assert voice.status_code == 200
+    assert "What can I help you with?" in voice.json()["reply"]
+
+    typed = client.post("/api/chat/start")
+    assert typed.status_code == 200
+    assert "Welcome to Firstpass Quotes" in typed.json()["reply"]
+
+    rejected = client.post("/api/chat/start?channel=sms")
+    assert rejected.status_code == 422
+
+
+def test_spoken_quote_without_a_price_stays_short():
+    text = spoken_quote_reply(
+        {
+            "customer_summary": {"headline": "Quote pipeline unavailable — returning your input"},
+            "quote": None,
+        }
+    )
+    assert "priced quote" in text
+    assert "audit" not in text.lower()

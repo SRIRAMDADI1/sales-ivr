@@ -1,0 +1,26 @@
+product_id: flood-residential
+product_line: flood
+name: Residential Flood Insurance
+description: Building and contents coverage for flood. This is not part of a homeowners,
+  condo, or renters policy. An issued flood policy usually has a waiting period before
+  coverage starts.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- elevation_ft
+- year_built
+- deductible
+tiers:
+- tier_id: flood-basic
+  name: Basic
+  base_premium_monthly: 65.0
+  coverage_limit: $150,000 building / $50,000 contents
+- tier_id: flood-standard
+  name: Standard
+  base_premium_monthly: 95.0
+  coverage_limit: $250,000 building / $100,000 contents
+- tier_id: flood-premium
+  name: Premium
+  base_premium_monthly: 140.0
+  coverage_limit: $500,000 building / $200,000 contents

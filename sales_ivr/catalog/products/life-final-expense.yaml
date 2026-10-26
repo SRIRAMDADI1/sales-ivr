@@ -1,0 +1,25 @@
+product_id: life-final-expense
+product_line: life
+name: Final Expense Life Insurance
+description: Smaller permanent life insurance meant for funeral costs. Some issued
+  policies grade the benefit in the first two years; this estimate assumes a level
+  benefit and is not a promise of simplified-issue approval.
+eligible_states:
+- ALL
+min_age: 50
+required_factors:
+- age
+- smoker
+tiers:
+- tier_id: final-10k
+  name: 10K Final Expense
+  base_premium_monthly: 28.0
+  coverage_limit: $10,000
+- tier_id: final-15k
+  name: 15K Final Expense
+  base_premium_monthly: 38.0
+  coverage_limit: $15,000
+- tier_id: final-25k
+  name: 25K Final Expense
+  base_premium_monthly: 55.0
+  coverage_limit: $25,000

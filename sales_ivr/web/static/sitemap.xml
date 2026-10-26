@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://REPLACE_WITH_YOUR_PUBLIC_URL/</loc>
+    <loc>http://firstpass-chat-sd1902.eastus.cloudapp.azure.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

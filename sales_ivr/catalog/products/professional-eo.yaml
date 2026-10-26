@@ -1,0 +1,25 @@
+product_id: professional-eo
+product_line: professional
+name: Professional Liability Insurance
+description: Liability for errors in professional services. Not premises bodily-injury
+  general liability.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- annual_revenue
+- years_in_business
+- claims_count
+tiers:
+- tier_id: eo-1m
+  name: $1M E&O
+  base_premium_monthly: 95.0
+  coverage_limit: $1,000,000
+- tier_id: eo-2m
+  name: $2M E&O
+  base_premium_monthly: 175.0
+  coverage_limit: $2,000,000
+- tier_id: eo-5m
+  name: $5M E&O
+  base_premium_monthly: 290.0
+  coverage_limit: $5,000,000

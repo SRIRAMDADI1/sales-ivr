@@ -1,46 +1,18 @@
-# Firstpass Quotes web chat — local run + public Azure deploy (**no Docker**)
+# Firstpass Quotes web chat — local run + public Kubernetes deploy
 
 Conversational agent front door for the Sales IVR. Customers can speak naturally, provide
 details in any order, revise facts after a quote, and ask the agent to rerun the complete
 pipeline for an updated customer-facing quote.
 
-**Do not put API keys in this file.** Use `.env` in the repo root locally, or App Settings in Azure.
+**Do not put API keys in this file or in the container image.** Use `.env` in the repo root
+locally, or the `firstpass-openai` Kubernetes Secret on the cluster.
 
-This guide deploys with **Azure App Service (Python)** + zip upload.  
-**Docker Desktop is not required.**
-
----
-
-## Why Azure kept returning 503 (`No module named 'sales_ivr'`)
-
-This failed repeatedly for **three stacked reasons**. All are fixed in this folder; follow Part B exactly.
-
-### 1. PowerShell `Compress-Archive` builds a Linux-broken zip
-
-`Compress-Archive` stores entries like `sales_ivr\__init__.py` (backslashes).  
-Azure App Service runs **Linux**. Unzip/Oryx then often **does not** create a real `sales_ivr/` package directory. Gunicorn starts, then dies:
-
-```text
-ModuleNotFoundError: No module named 'sales_ivr'
-```
-
-**Fix:** always build the zip with `pack_azure_zip.py` (forward-slash paths). Never use `Compress-Archive` for this deploy.
-
-### 2. Oryx runs the app from `/tmp/...`, not from wwwroot
-
-With `SCM_DO_BUILD_DURING_DEPLOYMENT=true`, Oryx builds `antenv`, writes `output.tar.zst`, and at cold start extracts to `/tmp/<id>/`. It sets `PYTHONPATH` to **only** the venv site-packages. Your package is a sibling folder next to `antenv`, so it is **not** importable unless startup adds that folder to `PYTHONPATH`.
-
-Hardcoding `--pythonpath /home/site/wwwroot` is wrong for compressed builds.
-
-**Fix:** `startup.sh` derives `APP_ROOT` from the live `antenv` path on `sys.path`, then runs `gunicorn ... app:app` with `--chdir` / `--pythonpath` set to that root. Root `app.py` is the ASGI entry.
-
-### 3. wwwroot can contain a *broken* leftover `sales_ivr/` folder
-
-Older startup logic did `[ -d /home/site/wwwroot/sales_ivr ]` and treated that as success. After Oryx compress, that directory can be empty/incomplete. Startup then pointed gunicorn at wwwroot → same `ModuleNotFoundError` → Azure marks the site failed → **503** → after a few crashes Azure **blocks** restarts for 1–2 minutes.
-
-**Fix:** never trust “directory exists”; require `import app` / `import sales_ivr` before binding the port.
+This guide deploys the existing `Dockerfile` to **Azure Kubernetes Service (AKS)**.
+The public URL is an Azure load balancer in front of one pod.
 
 ---
+
+
 
 ## Part A — Run on your PC (optional)
 
@@ -54,7 +26,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m sales_ivr.web.app
 ```
 
-Open: http://127.0.0.1:8000
+Open: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ### Sample chat
 
@@ -69,37 +41,59 @@ Live quotes need Azure OpenAI (key + endpoint + a **deployed** model matching `c
 
 ---
 
-## Part B — Public site on Azure (no Docker)
+
+
+## Part B — Public site on Kubernetes (AKS)
 
 Use **one** PowerShell window. Run sections in order.
 
 ### What you need
 
 1. [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli-windows) (`az version`)
-2. An Azure subscription
-3. **Not** Docker Desktop
+2. [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/) (running, Linux containers)
+3. An Azure subscription
+4. `kubectl` — installed in B1 if `kubectl version --client` fails
+
+
 
 ### What Azure creates
 
-| Resource | Purpose |
-|----------|---------|
-| Resource group | Container for the app |
-| App Service plan (Linux B1) | Compute |
-| Web App (Python 3.12) | Public HTTPS URL |
+
+| Resource                                 | Purpose                                          |
+| ---------------------------------------- | ------------------------------------------------ |
+| Resource group                           | Container for the cluster and registry           |
+| Azure Container Registry (Basic)         | Stores the app image                             |
+| AKS cluster (1 node, free control plane) | Runs the pod                                     |
+| Public load balancer                     | `http://<dns-label>.<region>.cloudapp.azure.com` |
+
+
+The load balancer URL is **HTTP**. Google can index it. HTTPS needs a domain you control and a certificate; this guide does not set that up.
 
 ---
 
-### B1. Install Azure CLI (once)
 
-1. Install: https://learn.microsoft.com/cli/azure/install-azure-cli-windows  
-2. Open a **new** PowerShell window  
-3. Check:
+
+### B1. Install Azure CLI, Docker, and kubectl (once)
+
+1. Install Azure CLI: [https://learn.microsoft.com/cli/azure/install-azure-cli-windows](https://learn.microsoft.com/cli/azure/install-azure-cli-windows)
+2. Install and start Docker Desktop.
+3. Open a **new** PowerShell window and check:
 
 ```powershell
 az version
+docker version
+```
+
+If `kubectl` is missing:
+
+```powershell
+az aks install-cli
+kubectl version --client
 ```
 
 ---
+
+
 
 ### B2. Login and pick subscription
 
@@ -114,141 +108,159 @@ az account show -o table
 
 ---
 
+
+
 ### B3. Set names (edit, then keep this window open)
 
-Web app name must be **globally unique** (becomes `https://NAME.azurewebsites.net`).
+ACR name must be **globally unique**, 5–50 characters, letters and numbers only.
+DNS label must be **globally unique** in that region (it becomes the public hostname).
 
 ```powershell
-$SubscriptionId = "<PASTE-SUBSCRIPTION-ID>"
+$SubscriptionId = "bc55f11d-f48a-476c-b9a4-21a1f009de48"
 $Location       = "eastus"
-$ResourceGroup  = "rg-harborline"
-$PlanName       = "harborline-plan"
-$WebAppName     = "harborline-chat-sd1902"   # change if taken
+$ResourceGroup  = "rg-firstpass"
+$AcrName        = "firstpassacrsd1902"     # letters and numbers only
+$AksName        = "firstpass-aks"
+$DnsLabel       = "firstpass-chat-sd1902"  # public hostname label
 
-# Optional live OpenAI (leave empty for passthrough mode)
+# Optional live OpenAI (leave empty for passthrough mode).
 # Must be the resource root of the resource that owns config.yaml -> llm.deployment.
 # Verify with: az cognitiveservices account deployment list -n <resource> -g <group> -o table
-$AzureOpenAIKey      = ""
-$AzureOpenAIEndpoint = ""   # e.g. https://your-resource.openai.azure.com/
+$AzureOpenAIKey      = ""   # paste KEY 1 locally; do not commit it
+$AzureOpenAIEndpoint = "https://scd5583-0635-resource.openai.azure.com/"   # e.g. https://your-resource.openai.azure.com/
 ```
 
 ---
+
+
 
 ### B4. Go to the app folder
 
 ```powershell
 cd <this-repo>
-dir app.py, pack_azure_zip.py, requirements.txt, startup.sh, config.yaml, sales_ivr
+dir Dockerfile, k8s\deployment.yaml, k8s\service.yaml, config.yaml, sales_ivr
 ```
 
 ---
 
-### B5. Register App Service provider (first-time subscriptions)
+
+
+### B5. Register container providers (first-time subscriptions)
 
 ```powershell
-az provider register --namespace Microsoft.Web
-do {
-  Start-Sleep -Seconds 10
-  $state = az provider show -n Microsoft.Web --query registrationState -o tsv
-  Write-Host "Microsoft.Web = $state"
-} while ($state -ne "Registered")
+az provider register --namespace Microsoft.ContainerService
+az provider register --namespace Microsoft.ContainerRegistry
+foreach ($ns in @("Microsoft.ContainerService", "Microsoft.ContainerRegistry")) {
+  do {
+    Start-Sleep -Seconds 10
+    $state = az provider show -n $ns --query registrationState -o tsv
+    Write-Host "$ns = $state"
+  } while ($state -ne "Registered")
+}
 ```
 
 ---
 
-### B6. Create resource group + Linux plan + Python Web App
 
-Skip `az group create` / `az appservice plan create` / `az webapp create` if they already exist (e.g. you already use `harborline-chat-sd1902`).
+
+### B6. Create the resource group, registry, and cluster
+
+Skip a command if that resource already exists.
+
+Cluster create usually takes **5–10 minutes**. The control plane is free (`--tier free`). The node VM is billed until you delete the group (Part D).
 
 ```powershell
 az group create --name $ResourceGroup --location $Location
 
-az appservice plan create `
-  --name $PlanName `
+az acr create `
+  --name $AcrName `
   --resource-group $ResourceGroup `
-  --is-linux `
-  --sku B1
+  --sku Basic
 
-az webapp create `
-  --name $WebAppName `
+az aks create `
+  --name $AksName `
   --resource-group $ResourceGroup `
-  --plan $PlanName `
-  --runtime "PYTHON:3.12"
+  --node-count 1 `
+  --node-vm-size Standard_B2s `
+  --tier free `
+  --generate-ssh-keys `
+  --attach-acr $AcrName
 ```
 
-If the name is taken, change `$WebAppName` and re-run only `az webapp create`.
+If `Standard_B2s` is unavailable in `$Location`, rerun `az aks create` with `--node-vm-size Standard_D2s_v3`.
+
+If the ACR name is taken, change `$AcrName` and rerun `az acr create` and `az aks create`.
 
 ---
 
-### B7. Configure startup + build + env vars
+
+
+### B7. Build the image and push it to the registry
 
 ```powershell
-az webapp config set `
-  --name $WebAppName `
-  --resource-group $ResourceGroup `
-  --startup-file "startup.sh"
+cd <this-repo>
+$Image = "$AcrName.azurecr.io/firstpass-quotes:latest"
 
-$settings = @(
-  "SCM_DO_BUILD_DURING_DEPLOYMENT=true"
-  "ENABLE_ORYX_BUILD=true"
-  "WEBSITES_PORT=8000"
-)
-if ($AzureOpenAIKey -and $AzureOpenAIEndpoint) {
-  $settings += "AZURE_OPENAI_API_KEY=$AzureOpenAIKey"
-  $settings += "AZURE_OPENAI_ENDPOINT=$AzureOpenAIEndpoint"
-}
-
-az webapp config appsettings set `
-  --name $WebAppName `
-  --resource-group $ResourceGroup `
-  --settings $settings
+az acr login --name $AcrName
+docker build -t $Image .
+docker push $Image
 ```
-
-Do **not** set `SALES_IVR_CONFIG_PATH` to wwwroot; `startup.sh` sets it next to the extracted package.
 
 ---
 
-### B8. Stop the site, build a Linux-safe zip, deploy
 
-Stopping first avoids Azure’s crash-loop / “site blocked” while you upload a new package.
+
+### B8. Point kubectl at the cluster and store the OpenAI secret
+
+Empty key and endpoint are valid. The site still starts; quotes stay in passthrough until you set both.
+
+```powershell
+az aks get-credentials --resource-group $ResourceGroup --name $AksName --overwrite-existing
+
+kubectl create secret generic firstpass-openai `
+  --from-literal=AZURE_OPENAI_API_KEY="$AzureOpenAIKey" `
+  --from-literal=AZURE_OPENAI_ENDPOINT="$AzureOpenAIEndpoint" `
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+---
+
+
+
+### B9. Deploy the app and open the load balancer
+
+`k8s/deployment.yaml` and `k8s/service.yaml` contain placeholders. The replace below fills them for this session only; it does not edit the files in git.
 
 ```powershell
 cd <this-repo>
 
-az webapp stop --name $WebAppName --resource-group $ResourceGroup
+(Get-Content .\k8s\deployment.yaml -Raw) -replace 'REPLACE_ACR', $AcrName |
+  kubectl apply -f -
 
-# REQUIRED: Linux-safe zip (forward slashes). Do NOT use Compress-Archive.
-python .\pack_azure_zip.py
+(Get-Content .\k8s\service.yaml -Raw) -replace 'REPLACE_DNS_LABEL', $DnsLabel |
+  kubectl apply -f -
 
-az webapp deploy `
-  --name $WebAppName `
-  --resource-group $ResourceGroup `
-  --src-path ..\harborline-deploy.zip `
-  --type zip
+kubectl rollout status deployment/firstpass-quotes --timeout=180s
 ```
 
-First deploy (and any deploy that reinstalls wheels) can take **5–15 minutes** while Oryx runs `pip install -r requirements.txt`. Wait until `az webapp deploy` prints success. Do not health-check mid-deploy.
-
----
-
-### B9. Start the site and open it
+Wait until the load balancer has an address (often 1–2 minutes):
 
 ```powershell
-# If Azure previously blocked cold starts, wait out the block window
-Start-Sleep -Seconds 130
+do {
+  Start-Sleep -Seconds 10
+  $Ip = kubectl get svc firstpass-quotes -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
+  Write-Host "LoadBalancer IP: $Ip"
+} while (-not $Ip)
 
-az webapp start --name $WebAppName --resource-group $ResourceGroup
-
-$Url = "https://$WebAppName.azurewebsites.net"
+$Url = "http://$DnsLabel.$Location.cloudapp.azure.com"
 Write-Host "Site:   $Url"
 Write-Host "Health: $Url/api/health"
-
-# Cold start + Oryx extract often needs a minute
-Start-Sleep -Seconds 90
 Start-Process $Url
 ```
 
 ---
+
+
 
 ### B10. Verify
 
@@ -265,59 +277,79 @@ Expected:
 If it fails:
 
 ```powershell
-az webapp log startup show --name $WebAppName --resource-group $ResourceGroup
+kubectl get pods
+kubectl describe deployment firstpass-quotes
+kubectl logs deployment/firstpass-quotes --tail=80
 ```
 
 Look for:
 
-- `Firstpass startup: APP_ROOT=/tmp/...` (good)
-- `cannot import app/sales_ivr` or `ModuleNotFoundError` (bad — usually means B8 used `Compress-Archive` or an old zip)
+- Pod `Running` and `1/1` ready (good)
+- `ImagePullBackOff` (bad — ACR name mismatch, or `az aks create` was run without `--attach-acr`)
+- `CreateContainerConfigError` (bad — `firstpass-openai` secret missing; rerun B8)
 
 ---
+
+
 
 ### B11. (Optional) Google Search
 
 1. Public URL from B9 is enough to share immediately.
-2. Optional custom domain: Portal → Web App → Custom domains.
-3. Edit `sales_ivr/web/static/sitemap.xml` (replace `REPLACE_WITH_YOUR_PUBLIC_URL`), redeploy (Part C).
-4. [Google Search Console](https://search.google.com/search-console) → add property → submit sitemap.
+2. Edit `sales_ivr/web/static/sitemap.xml` and replace `REPLACE_WITH_YOUR_PUBLIC_URL` with `$DnsLabel.$Location.cloudapp.azure.com` (no `http://`, no path).
+3. Rebuild and roll the image (Part C).
+4. [Google Search Console](https://search.google.com/search-console) → add property → URL prefix `http://<that-host>/` → submit sitemap `http://<that-host>/sitemap.xml`.
 5. Indexing can take days/weeks.
 
-Google does **not** host the site — it only indexes your Azure URL.
+Google does **not** host the site — it only indexes your Kubernetes load balancer URL.
 
 ---
+
+
 
 ## Part C — Redeploy after code changes
 
+`:latest` is reused, so the deployment sets `imagePullPolicy: Always` and a restart pulls the new image.
+
 ```powershell
 cd <this-repo>
-$WebAppName = "harborline-chat-sd1902"
-$ResourceGroup = "rg-harborline"
+$AcrName = "firstpassacrsd1902"
+$Image = "$AcrName.azurecr.io/firstpass-quotes:latest"
 
-az webapp stop --name $WebAppName --resource-group $ResourceGroup
-python .\pack_azure_zip.py
+az acr login --name $AcrName
+docker build -t $Image .
+docker push $Image
 
-az webapp deploy `
-  --name $WebAppName `
-  --resource-group $ResourceGroup `
-  --src-path ..\harborline-deploy.zip `
-  --type zip
+kubectl rollout restart deployment/firstpass-quotes
+kubectl rollout status deployment/firstpass-quotes --timeout=180s
+Invoke-RestMethod "http://firstpass-chat-sd1902.eastus.cloudapp.azure.com/api/health"
+```
 
-Start-Sleep -Seconds 130
-az webapp start --name $WebAppName --resource-group $ResourceGroup
-Start-Sleep -Seconds 90
-Invoke-RestMethod "https://$WebAppName.azurewebsites.net/api/health"
+To change the OpenAI secret without rebuilding:
+
+```powershell
+kubectl create secret generic firstpass-openai `
+  --from-literal=AZURE_OPENAI_API_KEY="$AzureOpenAIKey" `
+  --from-literal=AZURE_OPENAI_ENDPOINT="$AzureOpenAIEndpoint" `
+  --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl rollout restart deployment/firstpass-quotes
 ```
 
 ---
+
+
 
 ## Part D — Tear down (stop billing)
 
 ```powershell
-az group delete --name rg-harborline --yes --no-wait
+az group delete --name rg-firstpass --yes --no-wait
 ```
 
+That deletes the cluster, the node VM, the registry, and the public IP.
+
 ---
+
+
 
 ## Part E — Temporary demo URL only (not for Google)
 
@@ -329,19 +361,28 @@ npx localtunnel --port 8000
 
 ---
 
+
+
 ## Checklist
 
-| Step | Required? |
-|------|-----------|
-| Azure CLI | Yes |
-| Docker Desktop | **No** |
-| `python .\pack_azure_zip.py` (not Compress-Archive) | **Yes** for every deploy |
-| Part B deploy | Yes for a public HTTPS site |
-| Azure OpenAI key + model deployment | Yes for live quotes |
-| Google Search Console | Optional |
+
+| Step                                       | Required?                |
+| ------------------------------------------ | ------------------------ |
+| Azure CLI                                  | Yes                      |
+| Docker Desktop                             | **Yes**                  |
+| `kubectl` (`az aks install-cli`)           | Yes                      |
+| `docker build` + `docker push` to ACR      | **Yes** for every deploy |
+| `k8s/deployment.yaml` + `k8s/service.yaml` | Yes                      |
+| Part B cluster                             | Yes for a public site    |
+| Azure OpenAI key + model deployment        | Yes for live quotes      |
+| Google Search Console                      | Optional                 |
+
+
+
 
 ## API
 
 - `POST /api/chat/start` → `{ session_id, reply, step }`
 - `POST /api/chat/message` → `{ reply, done, result, ... }`
 - `GET /api/health`
+

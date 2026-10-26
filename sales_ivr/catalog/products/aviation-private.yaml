@@ -1,0 +1,25 @@
+product_id: aviation-private
+product_line: aviation
+name: Private Aircraft Insurance
+description: Hull and liability for pleasure and business use of a private aircraft.
+  Not airline, charter, or instruction-for-hire operations.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- pilot_age
+- pilot_hours
+- aircraft_value
+tiers:
+- tier_id: aviation-liability
+  name: Liability
+  base_premium_monthly: 280.0
+  coverage_limit: $1,000,000 liability
+- tier_id: aviation-hull-150
+  name: Hull 150
+  base_premium_monthly: 520.0
+  coverage_limit: $150,000 hull
+- tier_id: aviation-hull-500
+  name: Hull 500
+  base_premium_monthly: 900.0
+  coverage_limit: $500,000 hull

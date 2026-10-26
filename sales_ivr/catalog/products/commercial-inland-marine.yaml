@@ -1,0 +1,24 @@
+product_id: commercial-inland-marine
+product_line: commercial
+name: Inland Marine Insurance
+description: Moveable equipment and property away from your premises, including contractors'
+  equipment.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- scheduled_value
+- claims_count
+tiers:
+- tier_id: im-tools
+  name: Tools
+  base_premium_monthly: 60.0
+  coverage_limit: scheduled tools
+- tier_id: im-contractors
+  name: Contractors Equipment
+  base_premium_monthly: 110.0
+  coverage_limit: scheduled contractors equipment
+- tier_id: im-installation
+  name: Installation Floater
+  base_premium_monthly: 180.0
+  coverage_limit: property being installed

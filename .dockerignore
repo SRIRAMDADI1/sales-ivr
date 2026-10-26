@@ -1,0 +1,15 @@
+.venv
+venv
+.git
+.pytest_cache
+.mypy_cache
+.ruff_cache
+__pycache__
+*.py[cod]
+.env
+.env.local
+config.local.yaml
+secrets
+*.zip
+htmlcov
+.coverage

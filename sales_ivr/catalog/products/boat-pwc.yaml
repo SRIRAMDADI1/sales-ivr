@@ -1,0 +1,19 @@
+product_id: boat-pwc
+product_line: boat
+name: Personal Watercraft Insurance
+description: Hull and liability for a personal watercraft such as a jet ski.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- driver_age
+- engine_hp
+tiers:
+- tier_id: pwc-basic
+  name: Basic
+  base_premium_monthly: 32.0
+  coverage_limit: $15,000 hull
+- tier_id: pwc-standard
+  name: Standard
+  base_premium_monthly: 48.0
+  coverage_limit: $25,000 hull

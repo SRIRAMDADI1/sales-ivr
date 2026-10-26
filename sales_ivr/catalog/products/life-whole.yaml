@@ -1,0 +1,25 @@
+product_id: life-whole
+product_line: life
+name: Whole Life Insurance
+description: Permanent life insurance with a level premium. This quote does not project
+  cash value or dividends.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- age
+- smoker
+- coverage_amount
+tiers:
+- tier_id: whole-50k
+  name: 50K Whole Life
+  base_premium_monthly: 62.0
+  coverage_limit: $50,000
+- tier_id: whole-100k
+  name: 100K Whole Life
+  base_premium_monthly: 115.0
+  coverage_limit: $100,000
+- tier_id: whole-250k
+  name: 250K Whole Life
+  base_premium_monthly: 260.0
+  coverage_limit: $250,000

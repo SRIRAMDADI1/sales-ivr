@@ -1,0 +1,20 @@
+product_id: commercial-liquor
+product_line: commercial
+name: Liquor Liability Insurance
+description: Liability from selling, serving, or furnishing alcohol. Not a substitute
+  for general liability.
+eligible_states:
+- ALL
+min_age: 21
+required_factors:
+- annual_revenue
+- employee_count
+tiers:
+- tier_id: liquor-500
+  name: $500k Liquor
+  base_premium_monthly: 130.0
+  coverage_limit: $500,000
+- tier_id: liquor-1m
+  name: $1M Liquor
+  base_premium_monthly: 220.0
+  coverage_limit: $1,000,000

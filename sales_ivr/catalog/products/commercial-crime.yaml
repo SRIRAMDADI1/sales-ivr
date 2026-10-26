@@ -1,0 +1,24 @@
+product_id: commercial-crime
+product_line: commercial
+name: Commercial Crime Insurance
+description: Employee dishonesty and theft of money or securities. Often excluded
+  from a business owners policy unless scheduled.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- employee_count
+- annual_revenue
+tiers:
+- tier_id: crime-50
+  name: $50k Crime
+  base_premium_monthly: 40.0
+  coverage_limit: $50,000 employee dishonesty
+- tier_id: crime-100
+  name: $100k Crime
+  base_premium_monthly: 75.0
+  coverage_limit: $100,000 employee dishonesty
+- tier_id: crime-250
+  name: $250k Crime
+  base_premium_monthly: 120.0
+  coverage_limit: $250,000 employee dishonesty

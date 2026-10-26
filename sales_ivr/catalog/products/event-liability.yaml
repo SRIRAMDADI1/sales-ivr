@@ -1,0 +1,25 @@
+product_id: event-liability
+product_line: event
+name: Special Event Liability
+description: General liability for one short special event. One-time premium. Cancellation
+  coverage is a different policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- event_guests
+- event_days
+tiers:
+- tier_id: event-1m
+  name: $1M Event
+  base_premium_monthly: 150.0
+  coverage_limit: $1,000,000 liability
+- tier_id: event-2m
+  name: $2M Event
+  base_premium_monthly: 300.0
+  coverage_limit: $2,000,000 liability
+- tier_id: event-5m
+  name: $5M Event
+  base_premium_monthly: 550.0
+  coverage_limit: $5,000,000 liability
+premium_basis: term

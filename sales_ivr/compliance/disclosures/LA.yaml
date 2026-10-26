@@ -1,0 +1,33 @@
+state: LA
+regulator: Louisiana Department of Insurance
+market_notes:
+- Hurricane and coastal wind exposure. Separate wind deductibles are common.
+disclosures:
+- disclosure_id: la-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: la-licensed
+  text: Demo Insurance Co. is appointed in Louisiana. The Louisiana Department of
+    Insurance regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: la-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: la-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: la-hurricane
+  text: Coastal wind and hurricane deductibles are common in Louisiana. Do not say
+    a property quote includes full hurricane coverage.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

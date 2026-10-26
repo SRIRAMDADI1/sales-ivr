@@ -129,7 +129,19 @@ The web agent accepts details in any order, answers open-ended messages, and kee
 conversation active after quoting. When the customer requests a quote or changes details and
 asks for a revision, it builds a fresh session JSON and reruns the complete agent pipeline.
 
-Public deploy (**no Docker**): [WEB.md](WEB.md)
+Public deploy (Kubernetes): [WEB.md](WEB.md)
+
+## Coverage
+
+Appointed in all 50 states and the District of Columbia. The catalog includes personal,
+life, supplemental health, and commercial lines. A few lines are narrower:
+
+- Private workers compensation is not offered in ND, OH, WA, or WY.
+- Standardized Medicare supplement is not offered in MA, MN, or WI.
+- Residential earthquake, snowmobile, and yacht products are regional.
+- Farm, crop, and equine products are not offered in DC.
+
+Premiums use illustrative jurisdiction factors. They are not filed rates.
 
 ## Architecture
 

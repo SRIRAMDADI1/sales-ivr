@@ -1,0 +1,37 @@
+state: WA
+regulator: Washington State Office of the Insurance Commissioner
+market_notes:
+- Wildfire exposure. Do not promise that a property quote has no wildfire deductible
+  or exclusion.
+- Monopolistic workers compensation. Do not offer the private workers compensation
+  product. Direct the caller to the Washington State Department of Labor & Industries.
+disclosures:
+- disclosure_id: wa-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: wa-licensed
+  text: Demo Insurance Co. is appointed in Washington. The Washington State Office
+    of the Insurance Commissioner regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: wa-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: wa-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: wa-wc-fund
+  text: Private workers compensation is not offered in Washington. Employers obtain
+    coverage through the Washington State Department of Labor & Industries.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score
+- we can write your workers compensation

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: /sitemap.xml
+Sitemap: http://firstpass-chat-sd1902.eastus.cloudapp.azure.com/sitemap.xml

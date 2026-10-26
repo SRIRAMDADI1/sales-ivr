@@ -1,0 +1,25 @@
+product_id: farm-farmowners
+product_line: farm
+name: Farmowners Insurance
+description: Farm dwelling, household personal property, and farm liability. Not crop-yield
+  insurance and not livestock mortality.
+eligible_states:
+- AG
+min_age: 18
+required_factors:
+- acres
+- year_built
+- roof_age
+tiers:
+- tier_id: farm-basic
+  name: Basic
+  base_premium_monthly: 140.0
+  coverage_limit: $350,000 dwelling
+- tier_id: farm-standard
+  name: Standard
+  base_premium_monthly: 230.0
+  coverage_limit: $600,000 dwelling
+- tier_id: farm-premium
+  name: Premium
+  base_premium_monthly: 360.0
+  coverage_limit: $1,000,000 dwelling

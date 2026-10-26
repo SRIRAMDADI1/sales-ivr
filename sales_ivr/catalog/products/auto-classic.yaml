@@ -1,0 +1,25 @@
+product_id: auto-classic
+product_line: auto
+name: Classic Auto Insurance
+description: Agreed-value coverage for a collectible private passenger auto, written
+  for limited annual mileage. Not a daily-driver personal auto policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- driver_age
+- vehicle_year
+- annual_mileage
+tiers:
+- tier_id: classic-agreed-25
+  name: Agreed $25k
+  base_premium_monthly: 55.0
+  coverage_limit: $25,000 agreed value
+- tier_id: classic-agreed-50
+  name: Agreed $50k
+  base_premium_monthly: 85.0
+  coverage_limit: $50,000 agreed value
+- tier_id: classic-agreed-100
+  name: Agreed $100k
+  base_premium_monthly: 120.0
+  coverage_limit: $100,000 agreed value

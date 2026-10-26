@@ -1,0 +1,20 @@
+product_id: powersports-snowmobile
+product_line: powersports
+name: Snowmobile Insurance
+description: Liability and physical damage for a snowmobile in states with a real
+  snow season.
+eligible_states:
+- SNOWBELT
+min_age: 18
+required_factors:
+- driver_age
+- engine_hp
+tiers:
+- tier_id: snow-basic
+  name: Basic
+  base_premium_monthly: 25.0
+  coverage_limit: $10,000
+- tier_id: snow-standard
+  name: Standard
+  base_premium_monthly: 40.0
+  coverage_limit: $18,000

@@ -1,0 +1,25 @@
+product_id: rv-motorhome
+product_line: rv
+name: Motorhome Insurance
+description: Liability and physical damage for a motorhome, including attached residential
+  equipment. Not a travel-trailer contents policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- driver_age
+- rv_year
+- annual_mileage
+tiers:
+- tier_id: rv-basic
+  name: Basic
+  base_premium_monthly: 85.0
+  coverage_limit: $75,000
+- tier_id: rv-standard
+  name: Standard
+  base_premium_monthly: 130.0
+  coverage_limit: $150,000
+- tier_id: rv-premium
+  name: Premium
+  base_premium_monthly: 190.0
+  coverage_limit: $300,000

@@ -11,7 +11,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-OUT = ROOT.parent / "harborline-deploy.zip"
+OUT = ROOT.parent / "firstpass-deploy.zip"
 
 # Paths relative to sales-ivr/ that Azure needs at the zip root.
 INCLUDE_FILES = [

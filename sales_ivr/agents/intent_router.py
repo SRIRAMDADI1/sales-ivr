@@ -20,13 +20,15 @@ class IntentResult(BaseModel):
     notes: str = ""
 
 
-SYSTEM = """You are IntentRouterAgent for an insurance sales IVR.
+SYSTEM = f"""You are IntentRouterAgent for an insurance sales IVR.
 Classify intent as one of: new_quote, policy_change, claims_inquiry, billing, speak_to_agent, unknown.
 If dtmf_digits is "0", prefer speak_to_agent.
 If verification_failed is true, set route_to_handoff=true and next_node=handoff.
 Route speak_to_agent, claims_inquiry, billing, policy_change to handoff.
 Route new_quote to product_recommendation.
-Infer product_line_hint when the caller mentions a product (auto, home, life, renters, etc.).
+When the caller names a coverage, set product_line_hint to the closest line.
+Lines: {", ".join(line.value for line in ProductLine)}.
+Leave product_line_hint null when the caller does not name a coverage.
 Return JSON only. Tools optional.
 """
 

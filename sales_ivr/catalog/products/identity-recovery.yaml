@@ -1,0 +1,19 @@
+product_id: identity-recovery
+product_line: identity
+name: Identity Theft Insurance
+description: Expense reimbursement and recovery help after identity theft. Not a business
+  cyber policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- occupants
+tiers:
+- tier_id: identity-individual
+  name: Individual
+  base_premium_monthly: 8.0
+  coverage_limit: $25,000 expense reimbursement
+- tier_id: identity-family
+  name: Family
+  base_premium_monthly: 14.0
+  coverage_limit: $1,000,000 expense reimbursement

@@ -1,0 +1,25 @@
+product_id: boat-yacht
+product_line: boat
+name: Yacht Insurance
+description: Hull, liability, and uninsured boater coverage for a larger recreational
+  boat kept in coastal or Great Lakes waters. Not a small-boat policy.
+eligible_states:
+- COASTAL
+min_age: 18
+required_factors:
+- watercraft_length_ft
+- hull_year
+- engine_hp
+tiers:
+- tier_id: yacht-250
+  name: Coastal 250
+  base_premium_monthly: 180.0
+  coverage_limit: $250,000 hull
+- tier_id: yacht-500
+  name: Coastal 500
+  base_premium_monthly: 320.0
+  coverage_limit: $500,000 hull
+- tier_id: yacht-1m
+  name: Coastal 1M
+  base_premium_monthly: 540.0
+  coverage_limit: $1,000,000 hull

@@ -1,0 +1,24 @@
+product_id: commercial-equipment-breakdown
+product_line: commercial
+name: Equipment Breakdown Insurance
+description: Mechanical and electrical breakdown of boilers, HVAC, and business equipment.
+  Not ordinary wear and not a maintenance contract.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- square_feet
+- year_built
+tiers:
+- tier_id: equip-basic
+  name: Basic
+  base_premium_monthly: 35.0
+  coverage_limit: $100,000 equipment
+- tier_id: equip-standard
+  name: Standard
+  base_premium_monthly: 60.0
+  coverage_limit: $500,000 equipment
+- tier_id: equip-premium
+  name: Premium
+  base_premium_monthly: 95.0
+  coverage_limit: $1,000,000 equipment

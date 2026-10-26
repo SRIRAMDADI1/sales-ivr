@@ -1,0 +1,24 @@
+product_id: commercial-flood
+product_line: flood
+name: Commercial Flood Insurance
+description: Building and contents flood coverage for a business. Not included in
+  a business owners or commercial property policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- elevation_ft
+- square_feet
+tiers:
+- tier_id: cflood-250
+  name: $250k Flood
+  base_premium_monthly: 140.0
+  coverage_limit: $250,000 building
+- tier_id: cflood-500
+  name: $500k Flood
+  base_premium_monthly: 240.0
+  coverage_limit: $500,000 building
+- tier_id: cflood-1m
+  name: $1M Flood
+  base_premium_monthly: 380.0
+  coverage_limit: $1,000,000 building

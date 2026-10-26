@@ -1,0 +1,24 @@
+product_id: medigap-supplement
+product_line: medigap
+name: Medicare Supplement Insurance
+description: Supplement to Original Medicare using standardized plan designs. Not
+  Medicare Advantage and not a Part D drug plan. Not offered in Massachusetts, Minnesota,
+  or Wisconsin, which use their own benefit structures.
+eligible_states:
+- MEDIGAP
+min_age: 65
+required_factors:
+- age
+tiers:
+- tier_id: medigap-ghd
+  name: High-deductible Plan G
+  base_premium_monthly: 72.0
+  coverage_limit: high-deductible Plan G
+- tier_id: medigap-n
+  name: Plan N
+  base_premium_monthly: 115.0
+  coverage_limit: standardized Plan N
+- tier_id: medigap-g
+  name: Plan G
+  base_premium_monthly: 165.0
+  coverage_limit: standardized Plan G

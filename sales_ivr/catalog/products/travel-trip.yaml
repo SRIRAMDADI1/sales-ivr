@@ -1,0 +1,25 @@
+product_id: travel-trip
+product_line: travel
+name: Trip Insurance
+description: Trip cancellation, interruption, and emergency medical benefits for a
+  single trip. One-time premium. Not a health insurance plan.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- trip_days
+- trip_cost
+tiers:
+- tier_id: trip-basic
+  name: Basic
+  base_premium_monthly: 35.0
+  coverage_limit: cancellation up to trip cost
+- tier_id: trip-standard
+  name: Standard
+  base_premium_monthly: 75.0
+  coverage_limit: cancellation plus emergency medical
+- tier_id: trip-premium
+  name: Premium
+  base_premium_monthly: 140.0
+  coverage_limit: cancellation, medical, and baggage
+premium_basis: term

@@ -1,0 +1,25 @@
+product_id: event-wedding
+product_line: event
+name: Wedding Insurance
+description: Cancellation and postponement, plus event liability, for one wedding.
+  One-time premium.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- event_guests
+- event_days
+tiers:
+- tier_id: wedding-basic
+  name: Basic
+  base_premium_monthly: 120.0
+  coverage_limit: $15,000 cancellation
+- tier_id: wedding-standard
+  name: Standard
+  base_premium_monthly: 240.0
+  coverage_limit: $35,000 cancellation
+- tier_id: wedding-premium
+  name: Premium
+  base_premium_monthly: 420.0
+  coverage_limit: $75,000 cancellation
+premium_basis: term

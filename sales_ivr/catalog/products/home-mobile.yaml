@@ -1,0 +1,25 @@
+product_id: home-mobile
+product_line: mobile_home
+name: Mobile Home Insurance
+description: Dwelling coverage for a manufactured or mobile home, including listed
+  attached structures. Flood is not included.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- year_built
+- square_feet
+- deductible
+tiers:
+- tier_id: mobile-basic
+  name: Basic
+  base_premium_monthly: 70.0
+  coverage_limit: $75,000 dwelling
+- tier_id: mobile-standard
+  name: Standard
+  base_premium_monthly: 105.0
+  coverage_limit: $150,000 dwelling
+- tier_id: mobile-premium
+  name: Premium
+  base_premium_monthly: 155.0
+  coverage_limit: $250,000 dwelling

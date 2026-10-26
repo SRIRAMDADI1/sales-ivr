@@ -1,0 +1,21 @@
+product_id: trucking-cargo
+product_line: trucking
+name: Motor Truck Cargo Insurance
+description: Legal liability for freight in your care, custody, or control. Not auto
+  liability.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- num_vehicles
+- radius_miles
+- scheduled_value
+tiers:
+- tier_id: cargo-100
+  name: $100k Cargo
+  base_premium_monthly: 90.0
+  coverage_limit: $100,000 per occurrence
+- tier_id: cargo-250
+  name: $250k Cargo
+  base_premium_monthly: 160.0
+  coverage_limit: $250,000 per occurrence

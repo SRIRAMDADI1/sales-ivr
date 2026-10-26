@@ -1,0 +1,25 @@
+product_id: workers-comp
+product_line: workers_comp
+name: Workers Compensation Insurance
+description: Statutory workers compensation and employers liability where a private
+  carrier can write the coverage. Not available in North Dakota, Ohio, Washington,
+  or Wyoming, which use state funds.
+eligible_states:
+- WC_PRIVATE
+min_age: 18
+required_factors:
+- annual_payroll
+- employee_count
+tiers:
+- tier_id: wc-el-100
+  name: EL $100k
+  base_premium_monthly: 180.0
+  coverage_limit: statutory plus $100,000 employers liability
+- tier_id: wc-el-500
+  name: EL $500k
+  base_premium_monthly: 320.0
+  coverage_limit: statutory plus $500,000 employers liability
+- tier_id: wc-el-1m
+  name: EL $1M
+  base_premium_monthly: 560.0
+  coverage_limit: statutory plus $1,000,000 employers liability

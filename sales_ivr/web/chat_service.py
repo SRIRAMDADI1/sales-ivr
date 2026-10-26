@@ -10,6 +10,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ValidationError
 
+from sales_ivr.catalog.jurisdictions import ALL_CODES, normalize_state
+from sales_ivr.catalog.loader import get_product
 from sales_ivr.agents.customer_presentation import (
     fallback_customer_summary,
     format_customer_reply,
@@ -21,23 +23,14 @@ from sales_ivr.llm.client import get_llm_unavailable_reason, parse_json_content
 from sales_ivr.models import CallSession, CallerProfile, CallerUtterance, IVRState
 from sales_ivr.models.enums import CallChannel
 from sales_ivr.orchestrator import run_session
-from sales_ivr.runtime import clear_resource_cache
+from sales_ivr.runtime import clear_resource_cache, get_catalog
 
 
-SUPPORTED_STATES = frozenset({"CA", "TX", "NY", "FL", "IL"})
+SUPPORTED_STATES = frozenset(ALL_CODES)
 
 
 PHONE_RE = re.compile(r"(\+?1?\s*[-.(]?\d{3}[-.)]?\s*\d{3}[-.]?\d{4})")
-STATE_RE = re.compile(r"\b(CA|TX|NY|FL|IL|California|Texas|New York|Florida|Illinois)\b", re.I)
 ZIP_RE = re.compile(r"\b(\d{5})(?:-\d{4})?\b")
-
-STATE_MAP = {
-    "california": "CA",
-    "texas": "TX",
-    "new york": "NY",
-    "florida": "FL",
-    "illinois": "IL",
-}
 
 
 class ConversationTurn(BaseModel):
@@ -101,13 +94,7 @@ def _normalize_phone(raw: str) -> str | None:
 
 
 def _normalize_state(raw: str) -> str | None:
-    match = STATE_RE.search(raw)
-    if not match:
-        return None
-    token = match.group(1)
-    if len(token) == 2:
-        return token.upper()
-    return STATE_MAP.get(token.lower())
+    return normalize_state(raw)
 
 
 def _extract_zip(raw: str) -> str | None:
@@ -122,7 +109,7 @@ Conversation rules:
 - Respond naturally to whatever the customer says. You may answer harmless general questions,
   but stay honest about being an insurance quote assistant and gently return to their goal.
 - Never force a fixed question order. Collect information in whatever order the customer offers.
-- For a quote, you need a US phone number, one supported state (CA, TX, NY, FL, IL), ZIP code,
+- For a quote, you need a US phone number, a state (any of the 50 states or DC), ZIP code,
   the kind of insurance/help requested, and any rating details the customer wants considered.
 - The state object below is authoritative. Return its complete current values, preserving prior
   facts unless the customer explicitly corrects or replaces them.
@@ -231,8 +218,9 @@ def create_chat() -> ChatSession:
     chat = ChatSession(session_id=str(uuid.uuid4()))
     welcome = (
         "Welcome to Firstpass Quotes. I’m your AI quote agent, and this is your first pass—"
-        "tell me what you need in your own words. You can give details in any order, ask "
-        "questions, or change information after I prepare a quote.\n\n"
+        "tell me what you need in your own words. Coverage is available in all 50 states and "
+        "Washington, D.C. You can give details in any order, ask questions, or change "
+        "information after I prepare a quote.\n\n"
         "When you’re ready, ask me to run a pass on your quote. "
         "Demo tip: 555-123-4001 is an existing customer."
     )
@@ -316,12 +304,14 @@ def _build_pipeline_payload(result: IVRState, call: CallSession) -> dict[str, An
         "customer_summary": None,
     }
     if session.quote:
+        product = get_product(list(get_catalog()), session.quote.product_id)
         payload["quote"] = {
             "monthly": session.quote.quote_amount_monthly,
             "annual": session.quote.quote_amount_annual,
             "summary": session.quote.coverage_summary,
             "script": session.quote.ivr_script,
             "product_line": session.quote.product_line.value,
+            "premium_basis": product.premium_basis if product is not None else "monthly",
         }
     if session.handoff:
         payload["handoff"] = {

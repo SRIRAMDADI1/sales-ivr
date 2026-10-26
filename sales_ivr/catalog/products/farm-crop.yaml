@@ -1,0 +1,25 @@
+product_id: farm-crop
+product_line: crop
+name: Crop Insurance
+description: Yield-style multi-peril coverage for one growing season. Not livestock
+  and not a farmowners policy. One-time seasonal premium.
+eligible_states:
+- AG
+min_age: 18
+required_factors:
+- acres
+- crop_type
+tiers:
+- tier_id: crop-basic
+  name: Basic Yield
+  base_premium_monthly: 600.0
+  coverage_limit: 50% of expected yield
+- tier_id: crop-standard
+  name: Standard Yield
+  base_premium_monthly: 1400.0
+  coverage_limit: 65% of expected yield
+- tier_id: crop-premium
+  name: Higher Yield
+  base_premium_monthly: 2800.0
+  coverage_limit: 75% of expected yield
+premium_basis: term

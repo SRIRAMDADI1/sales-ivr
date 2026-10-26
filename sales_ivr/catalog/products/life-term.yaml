@@ -1,23 +1,26 @@
 product_id: life-term
 product_line: life
 name: Term Life Insurance
-description: Fixed-term life insurance with level premiums.
-eligible_states: [CA, TX, NY, FL, IL]
+description: Level-premium term life insurance for a fixed period. It has no cash
+  value. The estimate is not a guarantee of insurability.
+eligible_states:
+- ALL
 min_age: 18
 required_factors:
-  - age
-  - coverage_amount
-  - term_years
+- age
+- coverage_amount
+- term_years
+- smoker
 tiers:
-  - tier_id: life-250k
-    name: 250K Term
-    base_premium_monthly: 35.0
-    coverage_limit: "$250,000"
-  - tier_id: life-500k
-    name: 500K Term
-    base_premium_monthly: 58.0
-    coverage_limit: "$500,000"
-  - tier_id: life-1m
-    name: 1M Term
-    base_premium_monthly: 95.0
-    coverage_limit: "$1,000,000"
+- tier_id: life-250k
+  name: 250K Term
+  base_premium_monthly: 35.0
+  coverage_limit: $250,000
+- tier_id: life-500k
+  name: 500K Term
+  base_premium_monthly: 58.0
+  coverage_limit: $500,000
+- tier_id: life-1m
+  name: 1M Term
+  base_premium_monthly: 95.0
+  coverage_limit: $1,000,000

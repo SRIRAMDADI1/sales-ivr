@@ -1,0 +1,36 @@
+state: PA
+regulator: Pennsylvania Insurance Department
+market_notes:
+- No-fault auto state. Do not describe the quote as covering all crash-related medical
+  bills.
+- Do not describe personal auto rates as based on gender. This rating plan does not
+  use gender.
+disclosures:
+- disclosure_id: pa-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: pa-licensed
+  text: Demo Insurance Co. is appointed in Pennsylvania. The Pennsylvania Insurance
+    Department regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: pa-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: pa-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: pa-nofault
+  text: Pennsylvania is a no-fault auto state. Personal injury protection may be mandatory,
+    and this quote does not promise to pay every medical bill from a crash.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

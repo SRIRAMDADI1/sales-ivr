@@ -8,6 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
+from sales_ivr.catalog.jurisdictions import ALL_SET
 from sales_ivr.models.enums import (
     CallChannel,
     CallerType,
@@ -18,7 +19,6 @@ from sales_ivr.models.enums import (
     SessionStatus,
 )
 
-US_STATE_PATTERN = re.compile(r"^[A-Z]{2}$")
 POLICY_ID_PATTERN = re.compile(r"^POL-[A-Z0-9]{6,12}$")
 PHONE_PATTERN = re.compile(r"^\+?1?\d{10,11}$")
 
@@ -90,8 +90,8 @@ class ExistingPolicy(BaseModel):
     @classmethod
     def validate_state(cls, value: str) -> str:
         upper = value.upper()
-        if not US_STATE_PATTERN.match(upper):
-            raise ValueError("state must be a 2-letter US code")
+        if upper not in ALL_SET:
+            raise ValueError("state must be a US state or DC postal code")
         return upper
 
 
@@ -109,8 +109,8 @@ class CallerProfile(BaseModel):
         if value is None:
             return value
         upper = value.upper()
-        if not US_STATE_PATTERN.match(upper):
-            raise ValueError("state must be a 2-letter US code")
+        if upper not in ALL_SET:
+            raise ValueError("state must be a US state or DC postal code")
         return upper
 
     @field_validator("zip_code")

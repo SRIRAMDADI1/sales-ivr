@@ -1,10 +1,38 @@
 state: FL
+regulator: Florida Office of Insurance Regulation
+market_notes:
+- No-fault auto state. Do not describe the quote as covering all crash-related medical
+  bills.
+- Hurricane and coastal wind exposure. Separate wind deductibles are common.
 disclosures:
-  - disclosure_id: fl-hurricane
-    text: "Property policies may exclude or limit hurricane and flood damage."
-    required_before_quote_acceptance: true
-  - disclosure_id: fl-non-binding
-    text: "This quote is non-binding until application is accepted."
-    required_before_quote_acceptance: true
+- disclosure_id: fl-hurricane
+  text: Property policies may exclude or limit hurricane and flood damage.
+  required_before_quote_acceptance: true
+- disclosure_id: fl-non-binding
+  text: This quote is non-binding until application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: fl-licensed
+  text: Demo Insurance Co. is appointed in Florida. The Florida Office of Insurance
+    Regulation regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: fl-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: fl-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: fl-nofault
+  text: Florida is a no-fault auto state. Personal injury protection may be mandatory,
+    and this quote does not promise to pay every medical bill from a crash.
+  required_before_quote_acceptance: true
 prohibited_phrases:
-  - "full hurricane coverage included"
+- full hurricane coverage included
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

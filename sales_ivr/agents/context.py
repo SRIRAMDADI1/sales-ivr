@@ -33,5 +33,11 @@ def session_snapshot(state: IVRState) -> dict[str, Any]:
         "verification_failed": state.verification_failed,
         "recalculate_quote": state.recalculate_quote,
         "route_to_handoff": state.route_to_handoff,
-        "carrier_config_note": "Demo Insurance Co. supports CA, TX, NY, FL, IL",
+        "carrier_config_note": (
+            "Demo Insurance Co. is appointed in all 50 states and the District of Columbia. "
+            "Private workers compensation is not offered in ND, OH, WA, or WY. "
+            "Standardized Medicare supplement is not offered in MA, MN, or WI. "
+            "Residential earthquake, snowmobile, yacht, crop, farm, and equine products "
+            "are limited to the states listed on each product."
+        ),
     }

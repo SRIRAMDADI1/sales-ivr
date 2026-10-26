@@ -1,0 +1,41 @@
+state: ND
+regulator: North Dakota Insurance Department
+market_notes:
+- No-fault auto state. Do not describe the quote as covering all crash-related medical
+  bills.
+- Monopolistic workers compensation. Do not offer the private workers compensation
+  product. Direct the caller to North Dakota Workforce Safety & Insurance.
+disclosures:
+- disclosure_id: nd-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: nd-licensed
+  text: Demo Insurance Co. is appointed in North Dakota. The North Dakota Insurance
+    Department regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: nd-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: nd-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: nd-nofault
+  text: North Dakota is a no-fault auto state. Personal injury protection may be mandatory,
+    and this quote does not promise to pay every medical bill from a crash.
+  required_before_quote_acceptance: true
+- disclosure_id: nd-wc-fund
+  text: Private workers compensation is not offered in North Dakota. Employers obtain
+    coverage through North Dakota Workforce Safety & Insurance.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score
+- we can write your workers compensation

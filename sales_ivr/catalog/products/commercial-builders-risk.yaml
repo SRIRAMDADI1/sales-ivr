@@ -1,0 +1,25 @@
+product_id: commercial-builders-risk
+product_line: commercial
+name: Builders Risk Insurance
+description: Course-of-construction property coverage for the project term. One-time
+  premium. Not completed-operations liability.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- project_value
+- project_months
+tiers:
+- tier_id: builders-250
+  name: $250k Project
+  base_premium_monthly: 400.0
+  coverage_limit: $250,000 project
+- tier_id: builders-1m
+  name: $1M Project
+  base_premium_monthly: 900.0
+  coverage_limit: $1,000,000 project
+- tier_id: builders-5m
+  name: $5M Project
+  base_premium_monthly: 1800.0
+  coverage_limit: $5,000,000 project
+premium_basis: term

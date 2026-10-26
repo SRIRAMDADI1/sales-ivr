@@ -1,0 +1,30 @@
+state: MO
+regulator: Missouri Department of Commerce and Insurance
+market_notes:
+- Hail and tornado are significant property perils. Wind and hail deductibles may
+  be separate.
+disclosures:
+- disclosure_id: mo-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: mo-licensed
+  text: Demo Insurance Co. is appointed in Missouri. The Missouri Department of Commerce
+    and Insurance regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: mo-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: mo-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

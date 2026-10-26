@@ -30,7 +30,7 @@ a retail insurance customer would want to read.
 Rules:
 - Speak directly to the customer ("you"), warm and professional.
 - Never mention agents, pipelines, tokens, LLM calls, audit trails, or internal node names.
-- If a quote exists, lead with the monthly and annual price and what is covered.
+- If a quote exists and premium_basis is "term", lead with the one-time premium. Otherwise lead with the monthly and annual price and what is covered.
 - If this is a handoff (claims/billing/speak-to-agent), explain who will help next and what to expect.
 - Keep body to 2–5 short paragraphs. Highlights should be 2–5 crisp bullets.
 - Include a short non-binding disclaimer.
@@ -128,6 +128,25 @@ def fallback_customer_summary(pipeline_payload: dict[str, Any]) -> CustomerFacin
         monthly = float(quote.get("monthly") or 0)
         annual = float(quote.get("annual") or 0)
         summary = quote.get("summary") or "coverage tailored to your answers"
+        if quote.get("premium_basis") == "term":
+            return CustomerFacingSummary(
+                headline="Your first pass is ready",
+                body=(
+                    f"Thanks for chatting with Firstpass. Based on what you shared, "
+                    f"your estimated one-time premium is ${monthly:.2f}.\n\n"
+                    f"This estimate covers: {summary}. "
+                    "A licensed specialist can confirm eligibility and finalize your options."
+                ),
+                highlights=[
+                    f"${monthly:.2f} estimated one-time premium",
+                    f"Product: {pipeline_payload.get('product_id') or 'selected coverage'}",
+                ],
+                next_steps=[
+                    "Review the estimate and coverage highlights below.",
+                    "Reply or call us when you are ready to bind a policy.",
+                    "Ask any questions about deductibles, discounts, or other products.",
+                ],
+            )
         return CustomerFacingSummary(
             headline="Your first pass is ready",
             body=(

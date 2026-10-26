@@ -1,0 +1,24 @@
+product_id: farm-livestock
+product_line: farm
+name: Livestock Mortality Insurance
+description: Mortality coverage for cattle and other livestock. Not crop insurance
+  and not horse mortality.
+eligible_states:
+- AG
+min_age: 18
+required_factors:
+- head_count
+- animal_value
+tiers:
+- tier_id: livestock-basic
+  name: Basic
+  base_premium_monthly: 80.0
+  coverage_limit: named-peril mortality
+- tier_id: livestock-standard
+  name: Standard
+  base_premium_monthly: 150.0
+  coverage_limit: broader mortality
+- tier_id: livestock-premium
+  name: Premium
+  base_premium_monthly: 260.0
+  coverage_limit: mortality plus major medical

@@ -1,0 +1,22 @@
+product_id: vision-individual
+product_line: vision
+name: Individual Vision Insurance
+description: Eye exam and eyewear benefits. Not a medical policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- occupants
+tiers:
+- tier_id: vision-exam
+  name: Exam
+  base_premium_monthly: 9.0
+  coverage_limit: annual exam
+- tier_id: vision-standard
+  name: Standard
+  base_premium_monthly: 14.0
+  coverage_limit: exam plus lenses
+- tier_id: vision-premium
+  name: Premium
+  base_premium_monthly: 22.0
+  coverage_limit: exam, lenses, and frames

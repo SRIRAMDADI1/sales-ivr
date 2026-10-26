@@ -1,0 +1,24 @@
+product_id: commercial-property
+product_line: commercial
+name: Commercial Property Insurance
+description: Building and business personal property. Not liability and not flood.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- square_feet
+- year_built
+- protection_class
+tiers:
+- tier_id: cprop-250
+  name: $250k Property
+  base_premium_monthly: 160.0
+  coverage_limit: $250,000 building and contents
+- tier_id: cprop-1m
+  name: $1M Property
+  base_premium_monthly: 280.0
+  coverage_limit: $1,000,000 building and contents
+- tier_id: cprop-2m
+  name: $2M Property
+  base_premium_monthly: 450.0
+  coverage_limit: $2,000,000 building and contents

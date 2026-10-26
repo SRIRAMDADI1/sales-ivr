@@ -1,0 +1,24 @@
+product_id: professional-medmal
+product_line: professional
+name: Medical Professional Liability
+description: Medical professional liability for an individual practitioner. This demo
+  prices an occurrence-style estimate and is not a claims-made tail quote.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- years_in_practice
+- claims_count
+tiers:
+- tier_id: medmal-1m
+  name: $1M / $3M
+  base_premium_monthly: 450.0
+  coverage_limit: $1,000,000 / $3,000,000
+- tier_id: medmal-2m
+  name: $2M / $4M
+  base_premium_monthly: 900.0
+  coverage_limit: $2,000,000 / $4,000,000
+- tier_id: medmal-high
+  name: Higher limits
+  base_premium_monthly: 1600.0
+  coverage_limit: $5,000,000

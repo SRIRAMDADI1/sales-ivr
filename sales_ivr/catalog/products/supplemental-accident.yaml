@@ -1,0 +1,24 @@
+product_id: supplemental-accident
+product_line: supplemental
+name: Accident Insurance
+description: Pays scheduled cash benefits for accidental injury. It does not pay benefits
+  for sickness and it is not major medical insurance.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- age
+- occupants
+tiers:
+- tier_id: accident-basic
+  name: Basic
+  base_premium_monthly: 19.0
+  coverage_limit: scheduled accident benefits
+- tier_id: accident-standard
+  name: Standard
+  base_premium_monthly: 32.0
+  coverage_limit: higher scheduled accident benefits
+- tier_id: accident-family
+  name: Family
+  base_premium_monthly: 48.0
+  coverage_limit: family scheduled accident benefits

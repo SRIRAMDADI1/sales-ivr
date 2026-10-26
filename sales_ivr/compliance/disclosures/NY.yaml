@@ -1,11 +1,42 @@
 state: NY
+regulator: New York Department of Financial Services
+market_notes:
+- No-fault auto state. Do not describe the quote as covering all crash-related medical
+  bills.
+- Hurricane and coastal wind exposure. Separate wind deductibles are common.
 disclosures:
-  - disclosure_id: ny-licensed
-    text: "Demo Insurance Co. is licensed in New York. This call may be recorded."
-    required_before_quote_acceptance: true
-  - disclosure_id: ny-estimate
-    text: "Quoted premium is an estimate pending full application review."
-    required_before_quote_acceptance: true
+- disclosure_id: ny-licensed
+  text: Demo Insurance Co. is licensed in New York. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: ny-estimate
+  text: Quoted premium is an estimate pending full application review.
+  required_before_quote_acceptance: true
+- disclosure_id: ny-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: ny-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: ny-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: ny-nofault
+  text: New York is a no-fault auto state. Personal injury protection may be mandatory,
+    and this quote does not promise to pay every medical bill from a crash.
+  required_before_quote_acceptance: true
+- disclosure_id: ny-hurricane
+  text: Coastal wind and hurricane deductibles are common in New York. Do not say
+    a property quote includes full hurricane coverage.
+  required_before_quote_acceptance: true
 prohibited_phrases:
-  - "instant binding"
-  - "no medical review required"
+- instant binding
+- no medical review required
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- based on your gender
+- based on your credit score

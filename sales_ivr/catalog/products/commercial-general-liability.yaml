@@ -1,0 +1,24 @@
+product_id: commercial-general-liability
+product_line: commercial
+name: General Liability Insurance
+description: Premises, operations, and products liability for a business. Not professional
+  liability and not auto liability.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- annual_revenue
+- employee_count
+tiers:
+- tier_id: gl-500
+  name: $500k GL
+  base_premium_monthly: 75.0
+  coverage_limit: $500,000 occurrence
+- tier_id: gl-1m
+  name: $1M GL
+  base_premium_monthly: 130.0
+  coverage_limit: $1,000,000 occurrence
+- tier_id: gl-2m
+  name: $2M GL
+  base_premium_monthly: 210.0
+  coverage_limit: $2,000,000 occurrence

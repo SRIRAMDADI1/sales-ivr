@@ -1,0 +1,24 @@
+product_id: dental-individual
+product_line: dental
+name: Individual Dental Insurance
+description: Preventive, basic, and major dental benefits for an individual or family.
+  Not a medical policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- age
+- occupants
+tiers:
+- tier_id: dental-preventive
+  name: Preventive
+  base_premium_monthly: 24.0
+  coverage_limit: preventive services
+- tier_id: dental-basic
+  name: Basic
+  base_premium_monthly: 39.0
+  coverage_limit: preventive and basic services
+- tier_id: dental-major
+  name: Major
+  base_premium_monthly: 55.0
+  coverage_limit: preventive, basic, and major services

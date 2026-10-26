@@ -1,0 +1,24 @@
+product_id: commercial-umbrella
+product_line: commercial
+name: Commercial Umbrella Insurance
+description: Excess liability over scheduled commercial general liability and commercial
+  auto. It does not replace those policies.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- annual_revenue
+- employee_count
+tiers:
+- tier_id: cumb-1m
+  name: $1M Umbrella
+  base_premium_monthly: 85.0
+  coverage_limit: $1,000,000
+- tier_id: cumb-5m
+  name: $5M Umbrella
+  base_premium_monthly: 140.0
+  coverage_limit: $5,000,000
+- tier_id: cumb-10m
+  name: $10M Umbrella
+  base_premium_monthly: 210.0
+  coverage_limit: $10,000,000

@@ -1,0 +1,26 @@
+product_id: home-condo
+product_line: condo
+name: Condo Insurance
+description: Walls-in building property, personal property, loss assessment, and liability
+  for a condominium unit you own. The association's master policy is separate. Flood
+  and earthquake are not included.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- year_built
+- square_feet
+- deductible
+tiers:
+- tier_id: condo-basic
+  name: Basic
+  base_premium_monthly: 45.0
+  coverage_limit: $50,000 building property
+- tier_id: condo-standard
+  name: Standard
+  base_premium_monthly: 70.0
+  coverage_limit: $100,000 building property
+- tier_id: condo-premium
+  name: Premium
+  base_premium_monthly: 110.0
+  coverage_limit: $200,000 building property

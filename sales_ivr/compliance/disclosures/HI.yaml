@@ -1,0 +1,43 @@
+state: HI
+regulator: Hawaii Insurance Division
+market_notes:
+- No-fault auto state. Do not describe the quote as covering all crash-related medical
+  bills.
+- Hurricane and coastal wind exposure. Separate wind deductibles are common.
+- Credit-based insurance scores are restricted for personal auto and home. This quote
+  does not use credit.
+- Do not describe personal auto rates as based on gender. This rating plan does not
+  use gender.
+disclosures:
+- disclosure_id: hi-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: hi-licensed
+  text: Demo Insurance Co. is appointed in Hawaii. The Hawaii Insurance Division regulates
+    this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: hi-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: hi-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: hi-nofault
+  text: Hawaii is a no-fault auto state. Personal injury protection may be mandatory,
+    and this quote does not promise to pay every medical bill from a crash.
+  required_before_quote_acceptance: true
+- disclosure_id: hi-hurricane
+  text: Coastal wind and hurricane deductibles are common in Hawaii. Do not say a
+    property quote includes full hurricane coverage.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

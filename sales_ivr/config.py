@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from dotenv import load_dotenv
@@ -118,5 +118,6 @@ class InsuranceProduct(BaseModel):
     description: str
     eligible_states: list[str]
     min_age: int = 18
+    premium_basis: Literal["monthly", "term"] = "monthly"
     tiers: list[ProductTier]
     required_factors: list[str]

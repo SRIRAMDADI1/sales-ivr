@@ -1,0 +1,26 @@
+product_id: auto-rideshare
+product_line: auto
+name: Rideshare Gap Insurance
+description: Covers the driver while a rideshare app is on and no passenger or delivery
+  is underway. It does not replace the transportation network company's coverage during
+  an active trip.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- driver_age
+- vehicle_year
+- annual_mileage
+tiers:
+- tier_id: rideshare-basic
+  name: Basic
+  base_premium_monthly: 140.0
+  coverage_limit: 50/100/50
+- tier_id: rideshare-standard
+  name: Standard
+  base_premium_monthly: 190.0
+  coverage_limit: 100/300/100
+- tier_id: rideshare-premium
+  name: Premium
+  base_premium_monthly: 250.0
+  coverage_limit: 250/500/100

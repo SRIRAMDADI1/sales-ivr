@@ -1,0 +1,25 @@
+product_id: disability-income
+product_line: disability
+name: Disability Income Insurance
+description: Replaces a portion of income if illness or injury keeps you from working.
+  This is not workers compensation and not major medical insurance.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- age
+- elimination_days
+- benefit_years
+tiers:
+- tier_id: di-2k
+  name: $2,000 Monthly
+  base_premium_monthly: 55.0
+  coverage_limit: $2,000 per month
+- tier_id: di-4k
+  name: $4,000 Monthly
+  base_premium_monthly: 95.0
+  coverage_limit: $4,000 per month
+- tier_id: di-6k
+  name: $6,000 Monthly
+  base_premium_monthly: 140.0
+  coverage_limit: $6,000 per month

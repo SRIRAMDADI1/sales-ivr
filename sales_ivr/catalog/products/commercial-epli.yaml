@@ -1,0 +1,20 @@
+product_id: commercial-epli
+product_line: commercial
+name: Employment Practices Liability
+description: Liability for employment claims such as wrongful termination, harassment,
+  and discrimination. Not workers compensation.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- employee_count
+- claims_count
+tiers:
+- tier_id: epli-1m
+  name: $1M EPLI
+  base_premium_monthly: 70.0
+  coverage_limit: $1,000,000
+- tier_id: epli-2m
+  name: $2M EPLI
+  base_premium_monthly: 120.0
+  coverage_limit: $2,000,000

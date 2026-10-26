@@ -14,6 +14,8 @@ class DisclosureRule(BaseModel):
 
 class StateCompliancePack(BaseModel):
     state: str
+    regulator: str = ""
+    market_notes: list[str] = Field(default_factory=list)
     disclosures: list[DisclosureRule] = Field(default_factory=list)
     prohibited_phrases: list[str] = Field(default_factory=list)
 

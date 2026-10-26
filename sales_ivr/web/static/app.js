@@ -130,7 +130,10 @@ function renderResult(result) {
       ${highlights ? `<ul class="summary-list">${highlights}</ul>` : ""}
       ${
         quote
-          ? `<div class="metric quote"><span class="label">Estimated monthly</span><span class="value">$${Number(quote.monthly).toFixed(2)}</span></div>
+          ? quote.premium_basis === "term"
+            ? `<div class="metric quote"><span class="label">Estimated premium</span><span class="value">$${Number(quote.monthly).toFixed(2)}</span></div>
+               <p class="summary-disclaimer">One-time premium for this term, not a monthly bill.</p>`
+            : `<div class="metric quote"><span class="label">Estimated monthly</span><span class="value">$${Number(quote.monthly).toFixed(2)}</span></div>
              <div class="metric"><span class="label">Estimated annual</span><span class="value">$${Number(quote.annual).toFixed(2)}</span></div>`
           : ""
       }

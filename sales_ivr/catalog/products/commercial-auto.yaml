@@ -1,0 +1,25 @@
+product_id: commercial-auto
+product_line: commercial
+name: Commercial Auto Insurance
+description: Liability and physical damage for autos titled to or used in a business.
+  Not a personal auto policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- num_vehicles
+- annual_mileage
+- driver_age
+tiers:
+- tier_id: cauto-basic
+  name: Basic
+  base_premium_monthly: 210.0
+  coverage_limit: 50/100/50
+- tier_id: cauto-standard
+  name: Standard
+  base_premium_monthly: 360.0
+  coverage_limit: 100/300/100
+- tier_id: cauto-premium
+  name: Premium
+  base_premium_monthly: 540.0
+  coverage_limit: 250/500/100

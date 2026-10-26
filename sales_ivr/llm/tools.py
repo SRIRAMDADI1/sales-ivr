@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any, Callable
 
+from sales_ivr.catalog.jurisdictions import ALL_SET
 from sales_ivr.catalog.loader import filter_by_line, filter_by_state, get_product
 from sales_ivr.compliance.loader import load_state_compliance
 from sales_ivr.models.enums import ProductLine
@@ -63,6 +64,10 @@ def tool_specs() -> list[dict[str, Any]]:
                     "properties": {
                         "product_id": {"type": "string"},
                         "tier_id": {"type": "string"},
+                        "state": {
+                            "type": "string",
+                            "description": "Caller's US state or DC postal code. Applies the jurisdiction factor.",
+                        },
                         "rating_attributes": {
                             "type": "object",
                             "additionalProperties": {"type": "number"},
@@ -134,7 +139,9 @@ def _list_products(args: dict[str, Any]) -> str:
             "product_line": p.product_line.value,
             "name": p.name,
             "description": p.description,
-            "eligible_states": p.eligible_states,
+            "min_age": p.min_age,
+            "premium_basis": p.premium_basis,
+            **_eligibility_payload(p, bool(state)),
             "tiers": [
                 {
                     "tier_id": t.tier_id,
@@ -151,15 +158,33 @@ def _list_products(args: dict[str, Any]) -> str:
     return json.dumps(payload)
 
 
+def _eligibility_payload(product: Any, state_was_requested: bool) -> dict[str, Any]:
+    codes = product.eligible_states
+    if state_was_requested:
+        return {"eligible_in_state": True, "eligible_state_count": len(codes)}
+    if set(codes) == ALL_SET:
+        return {
+            "eligibility": "all_50_states_and_dc",
+            "eligible_state_count": len(codes),
+        }
+    return {
+        "eligibility": "limited",
+        "eligible_state_count": len(codes),
+        "eligible_states": codes,
+    }
+
+
 def _calculate_premium(args: dict[str, Any]) -> str:
     products = list(get_catalog())
     # "factors" is the older argument name; accept it so a model using it still gets priced.
-    attributes = args.get("rating_attributes") or args.get("factors") or {}
+    attributes = dict(args.get("rating_attributes") or args.get("factors") or {})
+    state = args.get("state") or attributes.pop("state", None)
     breakdown = ENGINE.calculate_for_product_id(
         products,
         args["product_id"],
         args["tier_id"],
         attributes,
+        state=state,
     )
     return json.dumps(breakdown.as_tool_payload())
 

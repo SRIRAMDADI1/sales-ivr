@@ -1,0 +1,25 @@
+product_id: trucking-liability
+product_line: trucking
+name: Trucking Liability Insurance
+description: Auto liability for a for-hire motor carrier. Cargo is a separate policy.
+  Not a personal auto policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- num_vehicles
+- radius_miles
+- annual_mileage
+tiers:
+- tier_id: truck-750
+  name: $750k Liability
+  base_premium_monthly: 480.0
+  coverage_limit: $750,000 liability
+- tier_id: truck-1m
+  name: $1M Liability
+  base_premium_monthly: 820.0
+  coverage_limit: $1,000,000 liability
+- tier_id: truck-2m
+  name: $2M Liability
+  base_premium_monthly: 1400.0
+  coverage_limit: $2,000,000 liability

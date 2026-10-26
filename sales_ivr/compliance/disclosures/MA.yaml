@@ -1,0 +1,46 @@
+state: MA
+regulator: Massachusetts Division of Insurance
+market_notes:
+- No-fault auto state. Do not describe the quote as covering all crash-related medical
+  bills.
+- Hurricane and coastal wind exposure. Separate wind deductibles are common.
+- Standardized Medicare supplement is not eligible in this state.
+- Do not describe personal auto rates as based on gender. This rating plan does not
+  use gender.
+disclosures:
+- disclosure_id: ma-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: ma-licensed
+  text: Demo Insurance Co. is appointed in Massachusetts. The Massachusetts Division
+    of Insurance regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: ma-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: ma-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: ma-nofault
+  text: Massachusetts is a no-fault auto state. Personal injury protection may be
+    mandatory, and this quote does not promise to pay every medical bill from a crash.
+  required_before_quote_acceptance: true
+- disclosure_id: ma-hurricane
+  text: Coastal wind and hurricane deductibles are common in Massachusetts. Do not
+    say a property quote includes full hurricane coverage.
+  required_before_quote_acceptance: true
+- disclosure_id: ma-medigap
+  text: Massachusetts does not use the NAIC standardized Medicare supplement plans.
+    This carrier's medigap product is not available here.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

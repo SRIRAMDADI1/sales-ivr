@@ -1,0 +1,23 @@
+product_id: equine-mortality
+product_line: equine
+name: Equine Mortality Insurance
+description: Mortality coverage for a horse. Not a farmowners policy and not pet insurance.
+eligible_states:
+- AG
+min_age: 18
+required_factors:
+- horse_count
+- horse_value
+tiers:
+- tier_id: equine-mortality
+  name: Mortality
+  base_premium_monthly: 45.0
+  coverage_limit: mortality
+- tier_id: equine-major
+  name: Major Medical
+  base_premium_monthly: 90.0
+  coverage_limit: mortality and major medical
+- tier_id: equine-full
+  name: Full
+  base_premium_monthly: 160.0
+  coverage_limit: mortality, major medical, and loss of use

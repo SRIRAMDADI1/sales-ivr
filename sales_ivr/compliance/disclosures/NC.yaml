@@ -1,0 +1,35 @@
+state: NC
+regulator: North Carolina Department of Insurance
+market_notes:
+- Hurricane and coastal wind exposure. Separate wind deductibles are common.
+- Do not describe personal auto rates as based on gender. This rating plan does not
+  use gender.
+disclosures:
+- disclosure_id: nc-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: nc-licensed
+  text: Demo Insurance Co. is appointed in North Carolina. The North Carolina Department
+    of Insurance regulates this transaction. This call may be recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: nc-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: nc-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: nc-hurricane
+  text: Coastal wind and hurricane deductibles are common in North Carolina. Do not
+    say a property quote includes full hurricane coverage.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

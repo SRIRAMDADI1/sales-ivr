@@ -1,0 +1,26 @@
+product_id: earthquake-residential
+product_line: earthquake
+name: Residential Earthquake Insurance
+description: Dwelling damage from earthquake in states where this carrier writes it.
+  Flood and fire are not earthquake. Issued policies often use a percentage deductible;
+  this estimate prices the limit only.
+eligible_states:
+- EARTHQUAKE
+min_age: 18
+required_factors:
+- year_built
+- stories
+- deductible
+tiers:
+- tier_id: eq-basic
+  name: Basic
+  base_premium_monthly: 40.0
+  coverage_limit: $250,000 dwelling
+- tier_id: eq-standard
+  name: Standard
+  base_premium_monthly: 75.0
+  coverage_limit: $400,000 dwelling
+- tier_id: eq-premium
+  name: Premium
+  base_premium_monthly: 130.0
+  coverage_limit: $600,000 dwelling

@@ -1,0 +1,24 @@
+product_id: supplemental-hospital
+product_line: supplemental
+name: Hospital Indemnity Insurance
+description: Pays a set cash amount for a covered hospital stay. It does not pay the
+  hospital bill in full and it is not major medical insurance.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- age
+- occupants
+tiers:
+- tier_id: hospital-100
+  name: $100 Daily
+  base_premium_monthly: 18.0
+  coverage_limit: $100 per day
+- tier_id: hospital-250
+  name: $250 Daily
+  base_premium_monthly: 31.0
+  coverage_limit: $250 per day
+- tier_id: hospital-500
+  name: $500 Daily
+  base_premium_monthly: 46.0
+  coverage_limit: $500 per day

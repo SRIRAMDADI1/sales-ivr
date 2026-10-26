@@ -1,0 +1,20 @@
+product_id: powersports-atv
+product_line: powersports
+name: ATV Insurance
+description: Off-highway vehicle liability and physical damage. Not a street motorcycle
+  policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- driver_age
+- engine_hp
+tiers:
+- tier_id: atv-basic
+  name: Basic
+  base_premium_monthly: 22.0
+  coverage_limit: $8,000
+- tier_id: atv-standard
+  name: Standard
+  base_premium_monthly: 36.0
+  coverage_limit: $15,000

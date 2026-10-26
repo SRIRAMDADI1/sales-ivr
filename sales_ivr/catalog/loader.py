@@ -4,6 +4,7 @@ from pathlib import Path
 
 import yaml
 
+from sales_ivr.catalog.jurisdictions import expand_eligible_states
 from sales_ivr.config import InsuranceProduct, resolve_path
 from sales_ivr.models.enums import ProductLine
 
@@ -11,7 +12,8 @@ from sales_ivr.models.enums import ProductLine
 def load_catalog(catalog_dir: Path) -> list[InsuranceProduct]:
     products: list[InsuranceProduct] = []
     for path in sorted(catalog_dir.glob("*.yaml")):
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        data["eligible_states"] = expand_eligible_states(list(data.get("eligible_states") or []))
         products.append(InsuranceProduct.model_validate(data))
     if not products:
         raise FileNotFoundError(f"No product YAML files found in {catalog_dir}")

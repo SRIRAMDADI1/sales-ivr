@@ -1,0 +1,61 @@
+name: CD
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cd-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to AKS
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      AZURE_RESOURCE_GROUP: rg-firstpass
+      AZURE_AKS_NAME: firstpass-aks
+      AZURE_ACR_NAME: firstpassacrsd1902
+      AZURE_DNS_LABEL: firstpass-chat-sd1902
+      AZURE_LOCATION: eastus
+      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: azure/setup-kubectl@v4
+
+      - name: Build and push image
+        run: |
+          set -euo pipefail
+          image="${AZURE_ACR_NAME}.azurecr.io/firstpass-quotes:${IMAGE_TAG}"
+          latest="${AZURE_ACR_NAME}.azurecr.io/firstpass-quotes:latest"
+          echo "${{ secrets.ACR_PASSWORD }}" | docker login "${AZURE_ACR_NAME}.azurecr.io" --username "${{ secrets.ACR_USERNAME }}" --password-stdin
+          docker build --tag "$image" --tag "$latest" .
+          docker push "$image"
+          docker push "$latest"
+
+      - name: Roll out to the cluster
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+          sed "s/REPLACE_ACR/${AZURE_ACR_NAME}/g; s/:latest/:${IMAGE_TAG}/" k8s/deployment.yaml | kubectl apply -f -
+          sed "s/REPLACE_DNS_LABEL/${AZURE_DNS_LABEL}/g" k8s/service.yaml | kubectl apply -f -
+          kubectl rollout status deployment/firstpass-quotes --timeout=180s
+
+      - name: Check public health
+        run: |
+          set -euo pipefail
+          url="http://${AZURE_DNS_LABEL}.${AZURE_LOCATION}.cloudapp.azure.com/api/health"
+          curl --fail --silent --show-error --retry 6 --retry-delay 10 --retry-all-errors "$url"
+          echo

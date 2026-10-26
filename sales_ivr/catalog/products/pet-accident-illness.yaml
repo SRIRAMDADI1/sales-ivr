@@ -1,0 +1,24 @@
+product_id: pet-accident-illness
+product_line: pet
+name: Pet Insurance
+description: Accident and illness coverage for a dog or cat, with an optional wellness
+  tier. Not equine or livestock mortality.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- pet_age
+- species
+tiers:
+- tier_id: pet-accident
+  name: Accident Only
+  base_premium_monthly: 22.0
+  coverage_limit: accidents
+- tier_id: pet-illness
+  name: Accident and Illness
+  base_premium_monthly: 46.0
+  coverage_limit: accidents and illnesses
+- tier_id: pet-wellness
+  name: Wellness
+  base_premium_monthly: 72.0
+  coverage_limit: accidents, illnesses, and wellness

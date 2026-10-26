@@ -1,0 +1,19 @@
+product_id: cyber-personal
+product_line: cyber
+name: Personal Cyber Insurance
+description: Help with online fraud, data restoration, and cyber extortion expenses
+  for a household. Not a business cyber policy.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- occupants
+tiers:
+- tier_id: pcyber-basic
+  name: Basic
+  base_premium_monthly: 12.0
+  coverage_limit: $25,000
+- tier_id: pcyber-plus
+  name: Plus
+  base_premium_monthly: 22.0
+  coverage_limit: $100,000

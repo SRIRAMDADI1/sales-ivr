@@ -1,0 +1,25 @@
+product_id: ltc-comprehensive
+product_line: long_term_care
+name: Long-Term Care Insurance
+description: A daily benefit for long-term care at home or in a facility. Not Medicare
+  and not health insurance.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- age
+- benefit_years
+- elimination_days
+tiers:
+- tier_id: ltc-100
+  name: $100 Daily
+  base_premium_monthly: 90.0
+  coverage_limit: $100 per day
+- tier_id: ltc-150
+  name: $150 Daily
+  base_premium_monthly: 140.0
+  coverage_limit: $150 per day
+- tier_id: ltc-250
+  name: $250 Daily
+  base_premium_monthly: 210.0
+  coverage_limit: $250 per day

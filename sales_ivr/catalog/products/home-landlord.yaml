@@ -1,0 +1,25 @@
+product_id: home-landlord
+product_line: landlord
+name: Landlord Dwelling Insurance
+description: Dwelling fire coverage for a residence you rent to others, including
+  premises liability. It does not cover the tenant's belongings.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- year_built
+- units
+- roof_age
+tiers:
+- tier_id: landlord-basic
+  name: Basic
+  base_premium_monthly: 95.0
+  coverage_limit: $250,000 dwelling
+- tier_id: landlord-standard
+  name: Standard
+  base_premium_monthly: 150.0
+  coverage_limit: $450,000 dwelling
+- tier_id: landlord-premium
+  name: Premium
+  base_premium_monthly: 230.0
+  coverage_limit: $750,000 dwelling

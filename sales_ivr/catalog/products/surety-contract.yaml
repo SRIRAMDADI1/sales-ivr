@@ -1,0 +1,26 @@
+product_id: surety-contract
+product_line: surety
+name: Contract Surety Bond
+description: Performance and payment bond for a construction contract. A bond is not
+  an insurance policy; the principal may have to repay the surety. One-time premium
+  estimate, not a credit approval.
+eligible_states:
+- ALL
+min_age: 18
+required_factors:
+- contract_value
+- years_in_business
+tiers:
+- tier_id: surety-250
+  name: $250k Bond
+  base_premium_monthly: 750.0
+  coverage_limit: $250,000 bond
+- tier_id: surety-1m
+  name: $1M Bond
+  base_premium_monthly: 1800.0
+  coverage_limit: $1,000,000 bond
+- tier_id: surety-5m
+  name: $5M Bond
+  base_premium_monthly: 4000.0
+  coverage_limit: $5,000,000 bond
+premium_basis: term

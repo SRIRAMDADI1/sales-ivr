@@ -1,0 +1,36 @@
+state: DC
+regulator: Department of Insurance, Securities and Banking
+market_notes:
+- PIP may be required. Do not describe the quote as covering all crash-related medical
+  bills.
+disclosures:
+- disclosure_id: dc-non-binding
+  text: This quote is an estimate and is not a binder or an offer of insurance until
+    an application is accepted.
+  required_before_quote_acceptance: true
+- disclosure_id: dc-licensed
+  text: Demo Insurance Co. is appointed in District of Columbia. The Department of
+    Insurance, Securities and Banking regulates this transaction. This call may be
+    recorded.
+  required_before_quote_acceptance: true
+- disclosure_id: dc-rating-limits
+  text: This estimate does not use credit, gender, or marital status. It is not a
+    filed rate and underwriting can change it.
+  required_before_quote_acceptance: true
+- disclosure_id: dc-property-perils
+  text: A homeowners, condo, renters, landlord, or mobile-home estimate does not include
+    flood or earthquake. Wind, hail, hurricane, and wildfire deductibles can be separate
+    when those perils are covered.
+  required_before_quote_acceptance: true
+- disclosure_id: dc-pip
+  text: District of Columbia may require or commonly include personal injury protection
+    on an auto policy. This quote does not promise to pay every medical bill from
+    a crash.
+  required_before_quote_acceptance: true
+prohibited_phrases:
+- guaranteed approval
+- lowest price guaranteed
+- everyone qualifies
+- instant binding
+- based on your gender
+- based on your credit score

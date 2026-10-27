@@ -67,7 +67,7 @@ Use **one** PowerShell window. Run sections in order.
 | Public load balancer                     | `http://<dns-label>.<region>.cloudapp.azure.com` |
 
 
-The load balancer URL is **HTTP**. Google can index it. HTTPS needs a domain you control and a certificate; this guide does not set that up.
+The load balancer URL is **HTTP** and is only for health checks. The public site is **https://sales.firstpassquotes.com**, a CNAME to `<dns-label>.<region>.cloudapp.azure.com`. HTTPS is provided in front of that name. Voice needs the HTTPS address.
 
 ---
 
@@ -121,7 +121,7 @@ $Location       = "eastus"
 $ResourceGroup  = "rg-firstpass"
 $AcrName        = "firstpassacrsd1902"     # letters and numbers only
 $AksName        = "firstpass-aks"
-$DnsLabel       = "firstpass-chat-sd1902"  # public hostname label
+$DnsLabel       = "firstpass-chat-sd1902"  # load balancer hostname label
 
 # Optional live OpenAI (leave empty for passthrough mode).
 # Must be the resource root of the resource that owns config.yaml -> llm.deployment.
@@ -253,9 +253,9 @@ do {
 } while (-not $Ip)
 
 $Url = "http://$DnsLabel.$Location.cloudapp.azure.com"
-Write-Host "Site:   $Url"
 Write-Host "Health: $Url/api/health"
-Start-Process $Url
+Write-Host "Site:   https://sales.firstpassquotes.com"
+Start-Process "https://sales.firstpassquotes.com"
 ```
 
 ---
@@ -294,13 +294,13 @@ Look for:
 
 ### B11. (Optional) Google Search
 
-1. Public URL from B9 is enough to share immediately.
-2. Edit `sales_ivr/web/static/sitemap.xml` and replace `REPLACE_WITH_YOUR_PUBLIC_URL` with `$DnsLabel.$Location.cloudapp.azure.com` (no `http://`, no path).
-3. Rebuild and roll the image (Part C).
-4. [Google Search Console](https://search.google.com/search-console) → add property → URL prefix `http://<that-host>/` → submit sitemap `http://<that-host>/sitemap.xml`.
-5. Indexing can take days/weeks.
+`sales_ivr/web/static/sitemap.xml` and `sales_ivr/web/static/robots.txt` already use `https://sales.firstpassquotes.com`.
 
-Google does **not** host the site — it only indexes your Kubernetes load balancer URL.
+1. [Google Search Console](https://search.google.com/search-console) → add property → URL prefix `https://sales.firstpassquotes.com/`.
+2. Submit sitemap `https://sales.firstpassquotes.com/sitemap.xml`.
+3. Indexing can take days/weeks.
+
+Google does **not** host the site — it only indexes that public URL.
 
 ---
 

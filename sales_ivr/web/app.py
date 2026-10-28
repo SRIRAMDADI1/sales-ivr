@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hmac
 from pathlib import Path
 from typing import Literal
 
@@ -11,6 +12,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from sales_ivr.web.chat_service import create_chat, get_chat, handle_user_message, run_pending_quote
+from sales_ivr.web.pulse_ledger import summary as pulse_summary
+
+# Shared admin gate for the on-page Pulse panel.
+PULSE_ADMIN_PASSWORD = "12345"
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -35,6 +40,10 @@ class ChatMessageRequest(BaseModel):
 
 class ChatQuoteRequest(BaseModel):
     session_id: str
+
+
+class PulseAdminRequest(BaseModel):
+    password: str = Field(min_length=1, max_length=64)
 
 
 @app.get("/api/health")
@@ -83,6 +92,13 @@ def chat_state(session_id: str) -> dict:
         "quote_revisions": len(chat.quote_history) + (1 if chat.pipeline_result else 0),
         "result": chat.pipeline_result,
     }
+
+
+@app.post("/api/admin/pulse")
+def admin_pulse(body: PulseAdminRequest) -> dict:
+    if not hmac.compare_digest(body.password, PULSE_ADMIN_PASSWORD):
+        raise HTTPException(status_code=401, detail="Wrong password")
+    return pulse_summary()
 
 
 @app.get("/")

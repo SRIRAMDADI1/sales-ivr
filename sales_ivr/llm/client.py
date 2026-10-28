@@ -327,6 +327,14 @@ class AzureOpenAIClient(BaseLLMClient):
             finish_reason=choice.finish_reason,
         )
 
+        try:
+            from sales_ivr.web.pulse_ledger import record_usage
+
+            record_usage(usage)
+        except Exception:
+            # Usage tracking must not block a quote if the ledger cannot be written.
+            pass
+
         return LLMResult(
             content=message.content,
             tool_calls=tool_calls,

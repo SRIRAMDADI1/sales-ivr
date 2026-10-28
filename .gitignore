@@ -30,3 +30,4 @@ htmlcov/
 # Runtime
 reports/
 *.log
+data/

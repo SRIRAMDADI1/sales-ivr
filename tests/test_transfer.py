@@ -81,6 +81,7 @@ def test_handoff_puts_the_caller_on_hold_and_records_the_agent_number(monkeypatc
 
 def test_launch_human_call_opens_teams_when_it_is_installed(monkeypatch):
     opened = []
+    monkeypatch.setattr(transfer.os, "name", "nt")
     monkeypatch.setattr(transfer, "_teams_installed", lambda: True)
     monkeypatch.setattr(transfer, "_bring_call_window_forward", lambda: None)
     monkeypatch.setattr(transfer.os, "startfile", lambda target: opened.append(target), raising=False)
@@ -94,6 +95,7 @@ def test_launch_human_call_opens_teams_when_it_is_installed(monkeypatch):
 
 def test_launch_human_call_uses_tel_when_teams_is_missing(monkeypatch):
     opened = []
+    monkeypatch.setattr(transfer.os, "name", "nt")
     monkeypatch.setattr(transfer, "_teams_installed", lambda: False)
     monkeypatch.setattr(transfer, "_bring_call_window_forward", lambda: None)
     monkeypatch.setattr(transfer.os, "startfile", lambda target: opened.append(target), raising=False)

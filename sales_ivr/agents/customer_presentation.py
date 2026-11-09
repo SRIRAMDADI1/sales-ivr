@@ -32,6 +32,7 @@ Rules:
 - Never mention agents, pipelines, tokens, LLM calls, audit trails, or internal node names.
 - If a quote exists and premium_basis is "term", lead with the one-time premium. Otherwise lead with the monthly and annual price and what is covered.
 - If this is a handoff (claims/billing/speak-to-agent), explain who will help next and what to expect.
+- If handoff.on_hold is true, tell the customer they are on hold and a person is being called at handoff.transfer_phone.
 - Keep body to 2–5 short paragraphs. Highlights should be 2–5 crisp bullets.
 - Include a short non-binding disclaimer.
 - Return ONLY JSON matching the schema.
@@ -169,6 +170,20 @@ def fallback_customer_summary(pipeline_payload: dict[str, Any]) -> CustomerFacin
         )
     if handoff:
         queue = handoff.get("queue") or "service"
+        if handoff.get("on_hold"):
+            phone = handoff.get("transfer_phone") or "a specialist"
+            return CustomerFacingSummary(
+                headline="Please hold while we connect you",
+                body=(
+                    "Please hold while I connect you to an agent. "
+                    f"Your call is being routed to {phone}."
+                ),
+                highlights=[
+                    "Status: on hold",
+                    f"Connecting to: {phone}",
+                ],
+                next_steps=["Stay on the line. A person will pick up."],
+            )
         return CustomerFacingSummary(
             headline="We're connecting you with the right specialist",
             body=(

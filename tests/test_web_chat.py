@@ -224,6 +224,55 @@ def test_voice_start_endpoint_uses_a_spoken_greeting():
     assert rejected.status_code == 422
 
 
+def test_asking_for_a_human_holds_and_routes_the_call(monkeypatch):
+    chat = create_chat(channel="voice")
+
+    def fail(_chat):
+        raise AssertionError("a human request should not wait on the quote model")
+
+    monkeypatch.setattr(chat_service, "run_conversation_agent", fail)
+
+    out = handle_user_message(chat, "Can I talk to a human agent?", channel="voice")
+
+    assert out["step"] == "on_hold"
+    assert out["pipeline_pending"] is False
+    assert out["quote_ready"] is False
+    assert "hold" in out["reply"].lower()
+    assert out["transfer"]["status"] == "on_hold"
+    assert out["transfer"]["action"] == "connect_human"
+    assert out["transfer"]["destination_e164"] == "+16108126519"
+    assert out["transfer"]["destination_display"] == "610-812-6519"
+
+
+def test_indirect_human_request_from_the_model_still_dials(monkeypatch):
+    chat = create_chat()
+    monkeypatch.setattr(
+        chat_service,
+        "run_conversation_agent",
+        lambda _: ConversationTurn(reply="One moment.", request_human=True),
+    )
+
+    out = handle_user_message(chat, "This automated line is not helping me.")
+
+    assert out["step"] == "on_hold"
+    assert out["transfer"]["destination_e164"] == "+16108126519"
+    assert out["pipeline_pending"] is False
+
+
+def test_ordinary_quote_request_does_not_transfer(monkeypatch):
+    chat = create_chat()
+    monkeypatch.setattr(
+        chat_service,
+        "run_conversation_agent",
+        lambda _: ConversationTurn(reply="Tell me a bit more.", insurance_need="auto"),
+    )
+
+    out = handle_user_message(chat, "I need a quote for my car")
+
+    assert out["transfer"] is None
+    assert out["step"] == "agent_online"
+
+
 def test_spoken_quote_without_a_price_stays_short():
     text = spoken_quote_reply(
         {

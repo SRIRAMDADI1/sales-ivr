@@ -24,6 +24,7 @@ from sales_ivr.models import CallSession, CallerProfile, CallerUtterance, IVRSta
 from sales_ivr.models.enums import CallChannel
 from sales_ivr.orchestrator import run_session
 from sales_ivr.runtime import clear_resource_cache, get_catalog
+from sales_ivr.transfer import HOLD_MESSAGE, human_transfer_payload, wants_human_agent
 
 
 SUPPORTED_STATES = frozenset(ALL_CODES)
@@ -43,6 +44,7 @@ class ConversationTurn(BaseModel):
     insurance_need: str | None = None
     quote_details: str | None = None
     run_pipeline: bool = False
+    request_human: bool = False
     change_summary: str | None = None
 
 
@@ -120,6 +122,9 @@ Conversation rules:
 - Set run_pipeline=true only when the customer asks to create, show, update, revise, recalculate,
   or rerun a quote and all required contact/need fields are known. If something is missing, ask
   for it and leave run_pipeline=false.
+- If the customer asks to talk to a human, a person, an agent, a representative, or an operator,
+  set request_human=true and run_pipeline=false. The reply must be exactly:
+  "Please hold while I connect you to an agent."
 - After a quote, keep conversing. Answer questions, accept corrections, and rerun when asked.
 - Do not claim a quote was calculated in `reply`; the pipeline result will be shown separately.
 - Do not invent customer facts. Null means no new value was learned.
@@ -343,6 +348,8 @@ def _build_pipeline_payload(result: IVRState, call: CallSession) -> dict[str, An
             "queue": session.handoff.recommended_queue.value,
             "priority": session.handoff.priority,
             "summary": session.handoff.summary,
+            "on_hold": session.handoff.on_hold,
+            "transfer_phone": session.handoff.transfer_phone,
         }
     return payload
 
@@ -421,6 +428,8 @@ def spoken_quote_reply(result: dict[str, Any]) -> str:
             ),
         ).strip()
     if handoff:
+        if handoff.get("on_hold"):
+            return HOLD_MESSAGE
         queue = str(handoff.get("queue") or "a specialist").replace("_", " ")
         detail = _spoken_sentences(str(handoff.get("summary") or ""), 1)
         return f"I'll connect you with {queue}. {detail}".strip()
@@ -445,10 +454,15 @@ def handle_user_message(
         chat.channel = channel
     text = (text or "").strip()
     chat.messages.append({"role": "user", "content": text})
+    if wants_human_agent(text):
+        return _hold_for_human(chat)
+
     pipeline_pending = False
     try:
         turn = run_conversation_agent(chat)
         _apply_turn(chat, turn)
+        if turn.request_human:
+            return _hold_for_human(chat, turn.reply)
         reply = turn.reply
         if turn.run_pipeline:
             missing = _missing_quote_fields(chat)
@@ -479,17 +493,7 @@ def handle_user_message(
             )
 
     chat.messages.append({"role": "assistant", "content": reply})
-    return {
-        "session_id": chat.session_id,
-        "reply": reply,
-        "step": "preparing_quote" if pipeline_pending else chat.step,
-        "done": False,
-        "quote_ready": False,
-        "pipeline_pending": pipeline_pending,
-        "quote_revision": len(chat.quote_history) + (1 if chat.pipeline_result else 0),
-        "context": chat.context(),
-        "result": None,
-    }
+    return _chat_payload(chat, reply, pipeline_pending=pipeline_pending)
 
 
 def run_pending_quote(chat: ChatSession) -> dict[str, Any]:
@@ -502,17 +506,7 @@ def run_pending_quote(chat: ChatSession) -> dict[str, Any]:
             "You can send those details in any order."
         )
         chat.messages.append({"role": "assistant", "content": reply})
-        return {
-            "session_id": chat.session_id,
-            "reply": reply,
-            "step": chat.step,
-            "done": False,
-            "quote_ready": False,
-            "pipeline_pending": False,
-            "quote_revision": len(chat.quote_history) + (1 if chat.pipeline_result else 0),
-            "context": chat.context(),
-            "result": None,
-        }
+        return _chat_payload(chat, reply)
 
     previous_result = chat.pipeline_result
     updated_result = run_pipeline_for_chat(chat)
@@ -526,14 +520,53 @@ def run_pending_quote(chat: ChatSession) -> dict[str, Any]:
     else:
         reply = "Your quote is ready. The summary is on the right."
     chat.messages.append({"role": "assistant", "content": reply})
+    handoff = updated_result.get("handoff") or {}
+    transfer = human_transfer_payload() if handoff.get("on_hold") and handoff.get("transfer_phone") else None
+    return _chat_payload(
+        chat,
+        reply,
+        step="on_hold" if transfer else chat.step,
+        quote_ready=transfer is None,
+        transfer=transfer,
+        result=chat.pipeline_result,
+        quote_revision=len(chat.quote_history) + 1,
+    )
+
+
+def _hold_for_human(chat: ChatSession, reply: str | None = None) -> dict[str, Any]:
+    """Stop the automated IVR, announce hold, and hand back a number to dial."""
+
+    spoken = HOLD_MESSAGE if chat.channel == "voice" else (reply or "").strip() or HOLD_MESSAGE
+    if "hold" not in spoken.lower():
+        spoken = HOLD_MESSAGE
+    chat.messages.append({"role": "assistant", "content": spoken})
+    return _chat_payload(chat, spoken, step="on_hold", transfer=human_transfer_payload())
+
+
+def _chat_payload(
+    chat: ChatSession,
+    reply: str,
+    *,
+    pipeline_pending: bool = False,
+    step: str | None = None,
+    quote_ready: bool = False,
+    transfer: dict[str, Any] | None = None,
+    result: dict[str, Any] | None = None,
+    quote_revision: int | None = None,
+) -> dict[str, Any]:
+    if step is None:
+        step = "preparing_quote" if pipeline_pending else chat.step
+    if quote_revision is None:
+        quote_revision = len(chat.quote_history) + (1 if chat.pipeline_result else 0)
     return {
         "session_id": chat.session_id,
         "reply": reply,
-        "step": chat.step,
+        "step": step,
         "done": False,
-        "quote_ready": True,
-        "pipeline_pending": False,
-        "quote_revision": len(chat.quote_history) + 1,
+        "quote_ready": quote_ready,
+        "pipeline_pending": pipeline_pending,
+        "quote_revision": quote_revision,
         "context": chat.context(),
-        "result": chat.pipeline_result,
+        "result": result,
+        "transfer": transfer,
     }

@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from sales_ivr.transfer import human_transfer_payload, launch_human_call
 from sales_ivr.web.chat_service import create_chat, get_chat, handle_user_message, run_pending_quote
 from sales_ivr.web.pulse_ledger import summary as pulse_summary
 
@@ -69,6 +70,22 @@ def chat_message(body: ChatMessageRequest) -> dict:
     if chat is None:
         raise HTTPException(status_code=404, detail="Chat session not found. Start a new chat.")
     return handle_user_message(chat, body.message, channel=body.channel)
+
+
+@app.post("/api/call/human")
+def call_human() -> dict:
+    """Open the local phone app and dial the configured human agent."""
+
+    transfer = human_transfer_payload()
+    try:
+        launch_human_call()
+    except OSError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {
+        "status": "calling",
+        "destination_e164": transfer["destination_e164"],
+        "destination_display": transfer["destination_display"],
+    }
 
 
 @app.post("/api/chat/quote")

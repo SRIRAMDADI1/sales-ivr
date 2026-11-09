@@ -9,6 +9,7 @@ runtime:
   after_hours_start: "18:00"
   after_hours_end: "08:00"
   max_agent_tool_rounds: 4
+  human_agent_phone: "610-812-6519"
 
 llm:
   # Requires Azure OpenAI. Without a real key/endpoint, the pipeline returns input as output.

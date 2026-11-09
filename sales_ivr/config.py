@@ -28,6 +28,8 @@ class RuntimeConfig(BaseModel):
     after_hours_start: str = "18:00"
     after_hours_end: str = "08:00"
     max_agent_tool_rounds: int = 4
+    # Dialed when a caller asks for a human during the IVR.
+    human_agent_phone: str = "610-812-6519"
 
 
 class LLMConfig(BaseModel):

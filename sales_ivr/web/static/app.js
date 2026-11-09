@@ -28,17 +28,20 @@ let activeCall = null;
 let callActive = false;
 let voiceState = "idle";
 let dropRest = false;
+let humanHold = false;
 let voiceDone = Promise.resolve();
 const STATUS_LABEL = {
   speaking: "I'm talking. Mic is off",
   listening: "Your turn",
   thinking: "One moment. Mic is off",
+  hold: "On hold",
   idle: "Ready",
 };
 const ORB_LABEL = {
   speaking: "Assistant is speaking. Microphone is off.",
   listening: "Your turn. Microphone is on.",
   thinking: "Microphone is off.",
+  hold: "On hold. Connecting you to an agent.",
   idle: "Talk, or tap to interrupt",
 };
 
@@ -48,6 +51,7 @@ const STEP_LABEL = {
   preparing_quote: "Pricing your quote",
   quote_ready: "Quote ready",
   loading_quote: "Working on your quote",
+  on_hold: "On hold",
 };
 
 function humanize(text) {
@@ -288,8 +292,65 @@ function hideVoiceStage() {
 }
 
 function endVoice() {
+  humanHold = false;
   callActive = false;
   activeCall?.stop();
+  hideVoiceStage();
+  input.disabled = false;
+}
+
+async function placeCall(button) {
+  if (button) button.textContent = "Opening the call...";
+  const res = await fetch("/api/call/human", { method: "POST" });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const detail = body.detail || "The call could not be started.";
+    if (button) button.textContent = button.dataset.label || "Call an agent";
+    throw new Error(typeof detail === "string" ? detail : "The call could not be started.");
+  }
+  if (button) button.textContent = `Call ${body.destination_display} again`;
+  addBubble(
+    "assistant",
+    `Opening the call to ${body.destination_display}. If a sign-in window is in front, sign in and the call continues.`
+  );
+  return body;
+}
+
+function addCallLink(transfer) {
+  const div = document.createElement("div");
+  div.className = "bubble assistant";
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "transfer-call";
+  button.dataset.label = `Call an agent at ${transfer.destination_display}`;
+  button.textContent = button.dataset.label;
+  button.addEventListener("click", async () => {
+    try {
+      await placeCall(button);
+    } catch (err) {
+      addBubble("assistant", err.message);
+    }
+  });
+  div.appendChild(button);
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return button;
+}
+
+async function beginHumanTransfer(data, channel) {
+  const transfer = data.transfer;
+  const button = addCallLink(transfer);
+  if (channel === "voice") {
+    const spoke = await speakIfLive(data.reply);
+    if (!spoke) return;
+    humanHold = true;
+    setVoiceStatus("hold", `Connecting you to an agent at ${transfer.destination_display}`);
+  }
+  try {
+    await placeCall(button);
+  } catch (err) {
+    addBubble("assistant", err.message);
+  }
 }
 
 async function ensureMic() {
@@ -319,6 +380,11 @@ async function deliverTurn(message, channel) {
   hideTyping();
   addBubble("assistant", data.reply);
   showStep(data.step);
+  if (data.transfer) {
+    if (channel === "voice") sessionChannel = "voice";
+    await beginHumanTransfer(data, channel);
+    return;
+  }
   if (channel === "voice") {
     sessionChannel = "voice";
     const spoke = await speakIfLive(data.reply);
@@ -337,6 +403,10 @@ async function deliverTurn(message, channel) {
     showStep(quoteData.step);
     if (quoteData.result) renderResult(quoteData.result);
     else restoreResultPanel();
+    if (quoteData.transfer) {
+      await beginHumanTransfer(quoteData, channel);
+      return;
+    }
     if (channel === "voice") await speakIfLive(quoteData.reply);
   } catch (quoteErr) {
     hideTyping();
@@ -444,6 +514,7 @@ async function runVoiceLoop(greeting) {
       quietTurns = 0;
       try {
         await deliverTurn(heard.slice(0, 2000), "voice");
+        if (humanHold) break;
       } catch (err) {
         hideTyping();
         const sorry = `Sorry, ${err.message}`;
@@ -452,12 +523,19 @@ async function runVoiceLoop(greeting) {
       }
     }
   } finally {
+    const stayOnHold = humanHold;
     callActive = false;
     activeCall?.stop();
     activeCall = null;
-    hideVoiceStage();
-    input.disabled = false;
-    input.focus();
+    if (stayOnHold) {
+      showVoiceStage();
+      setVoiceStatus("hold", voiceCaption.textContent || "Connecting you to an agent");
+      input.disabled = true;
+    } else {
+      hideVoiceStage();
+      input.disabled = false;
+      input.focus();
+    }
     release();
   }
 }

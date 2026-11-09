@@ -344,6 +344,22 @@ body {
   color: var(--ink);
   border-bottom-left-radius: 6px;
 }
+.transfer-call {
+  display: inline-block;
+  margin-top: 0.15rem;
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #f6f1e8;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.transfer-call:disabled {
+  opacity: 0.75;
+  cursor: progress;
+}
 .bubble.user {
   align-self: flex-end;
   background: var(--brand);
@@ -479,6 +495,16 @@ body {
   animation: voice-ring 1.4s ease-out infinite;
 }
 .voice-stage[data-state="listening"] .voice-orb::after { animation-delay: 0.55s; }
+.voice-stage[data-state="hold"] .voice-status { color: #9a6b12; }
+.voice-stage[data-state="hold"] .voice-orb {
+  background: #c4a15a;
+  box-shadow: 0 10px 24px rgba(154, 107, 18, 0.28);
+  animation: voice-listen 1.6s ease-in-out infinite;
+}
+.voice-stage[data-state="hold"] .voice-caption:empty::before {
+  content: "Please hold. Connecting you to an agent.";
+  color: #9a6b12;
+}
 .voice-stage[data-state="speaking"] .voice-orb,
 .voice-stage[data-state="thinking"] .voice-orb {
   background: #8d8680;

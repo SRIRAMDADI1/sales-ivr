@@ -151,6 +151,8 @@ class HandoffSummary(BaseModel):
     summary: str
     recommended_queue: HandoffQueue
     priority: int = Field(default=3, ge=1, le=5)
+    on_hold: bool = False
+    transfer_phone: str | None = None
 
 
 class CallSession(BaseModel):

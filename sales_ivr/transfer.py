@@ -56,10 +56,42 @@ def display_phone(phone: str) -> str:
     return phone.strip()
 
 
+_HANDOFF_PROMISE = re.compile(
+    r"("
+    r"human follow-?up"
+    r"|ready for a human"
+    r"|connect you"
+    r"|transfer you"
+    r"|stay on the line"
+    r"|hold while"
+    r"|call (an |a )?(agent|person|human|representative)"
+    r")",
+    re.IGNORECASE,
+)
+_AGREES = re.compile(
+    r"^\s*(yes|yeah|yep|yup|ok|okay|sure|please|do it|go ahead|connect|call|sounds good|that works)\b",
+    re.IGNORECASE,
+)
+
+
 def wants_human_agent(text: str) -> bool:
     """True when the caller is asking to leave the automated IVR for a person."""
 
     return bool(_HUMAN_REQUEST.search(text or ""))
+
+
+def agrees_to_human_offer(user_text: str, previous_assistant: str) -> bool:
+    """Yes / do it, after the assistant offered to bring in a person."""
+
+    if not _AGREES.search(user_text or ""):
+        return False
+    return bool(_HANDOFF_PROMISE.search(previous_assistant or ""))
+
+
+def promises_human_handoff(reply: str) -> bool:
+    """The model described a handoff instead of starting the call."""
+
+    return bool(_HANDOFF_PROMISE.search(reply or ""))
 
 
 def human_transfer_payload() -> dict[str, Any]:

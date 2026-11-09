@@ -259,6 +259,66 @@ def test_indirect_human_request_from_the_model_still_dials(monkeypatch):
     assert out["pipeline_pending"] is False
 
 
+def test_agreeing_to_a_human_follow_up_starts_the_call(monkeypatch):
+    chat = create_chat()
+    chat.messages.append(
+        {
+            "role": "assistant",
+            "content": "I can get this ready for a human follow-up.",
+        }
+    )
+
+    def fail(_chat):
+        raise AssertionError("agreeing to a person should connect without another model turn")
+
+    monkeypatch.setattr(chat_service, "run_conversation_agent", fail)
+
+    out = handle_user_message(chat, "do it")
+
+    assert out["step"] == "on_hold"
+    assert out["transfer"]["destination_e164"] == "+16108126519"
+    assert "hold" in out["reply"].lower()
+
+
+def test_model_promise_of_a_human_follow_up_starts_the_call(monkeypatch):
+    chat = create_chat()
+    monkeypatch.setattr(
+        chat_service,
+        "run_conversation_agent",
+        lambda _: ConversationTurn(
+            reply="I've got your details for a human follow-up about car insurance in California.",
+            insurance_need="car insurance",
+            run_pipeline=True,
+        ),
+    )
+
+    out = handle_user_message(chat, "okay")
+
+    assert out["step"] == "on_hold"
+    assert out["pipeline_pending"] is False
+    assert out["transfer"]["tel_url"] == "tel:+16108126519"
+
+
+def test_an_insurance_answer_is_not_treated_as_the_call(monkeypatch):
+    chat = create_chat()
+    chat.messages.append(
+        {
+            "role": "assistant",
+            "content": "What kind of insurance should the human help you with?",
+        }
+    )
+    monkeypatch.setattr(
+        chat_service,
+        "run_conversation_agent",
+        lambda _: ConversationTurn(reply="Car insurance, got it.", insurance_need="car insurance"),
+    )
+
+    out = handle_user_message(chat, "car insurance")
+
+    assert out["transfer"] is None
+    assert out["reply"] == "Car insurance, got it."
+
+
 def test_ordinary_quote_request_does_not_transfer(monkeypatch):
     chat = create_chat()
     monkeypatch.setattr(

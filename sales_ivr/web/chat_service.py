@@ -24,7 +24,13 @@ from sales_ivr.models import CallSession, CallerProfile, CallerUtterance, IVRSta
 from sales_ivr.models.enums import CallChannel
 from sales_ivr.orchestrator import run_session
 from sales_ivr.runtime import clear_resource_cache, get_catalog
-from sales_ivr.transfer import HOLD_MESSAGE, human_transfer_payload, wants_human_agent
+from sales_ivr.transfer import (
+    HOLD_MESSAGE,
+    agrees_to_human_offer,
+    human_transfer_payload,
+    promises_human_handoff,
+    wants_human_agent,
+)
 
 
 SUPPORTED_STATES = frozenset(ALL_CODES)
@@ -123,8 +129,9 @@ Conversation rules:
   or rerun a quote and all required contact/need fields are known. If something is missing, ask
   for it and leave run_pipeline=false.
 - If the customer asks to talk to a human, a person, an agent, a representative, or an operator,
-  set request_human=true and run_pipeline=false. The reply must be exactly:
-  "Please hold while I connect you to an agent."
+  or agrees to a handoff you already offered, set request_human=true and run_pipeline=false.
+  Do not keep collecting insurance details. Do not describe a follow-up, a callback, or a later handoff.
+  The reply must be exactly: "Please hold while I connect you to an agent."
 - After a quote, keep conversing. Answer questions, accept corrections, and rerun when asked.
 - Do not claim a quote was calculated in `reply`; the pipeline result will be shown separately.
 - Do not invent customer facts. Null means no new value was learned.
@@ -454,15 +461,15 @@ def handle_user_message(
         chat.channel = channel
     text = (text or "").strip()
     chat.messages.append({"role": "user", "content": text})
-    if wants_human_agent(text):
+    if wants_human_agent(text) or agrees_to_human_offer(text, _previous_assistant(chat)):
         return _hold_for_human(chat)
 
     pipeline_pending = False
     try:
         turn = run_conversation_agent(chat)
         _apply_turn(chat, turn)
-        if turn.request_human:
-            return _hold_for_human(chat, turn.reply)
+        if turn.request_human or promises_human_handoff(turn.reply):
+            return _hold_for_human(chat)
         reply = turn.reply
         if turn.run_pipeline:
             missing = _missing_quote_fields(chat)
@@ -531,6 +538,13 @@ def run_pending_quote(chat: ChatSession) -> dict[str, Any]:
         result=chat.pipeline_result,
         quote_revision=len(chat.quote_history) + 1,
     )
+
+
+def _previous_assistant(chat: ChatSession) -> str:
+    for item in reversed(chat.messages[:-1]):
+        if item["role"] == "assistant":
+            return item["content"]
+    return ""
 
 
 def _hold_for_human(chat: ChatSession, reply: str | None = None) -> dict[str, Any]:

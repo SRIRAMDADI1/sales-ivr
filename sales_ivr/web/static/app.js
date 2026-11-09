@@ -371,6 +371,7 @@ async function deliverTurn(message, channel) {
   if (data.transfer) {
     if (channel === "voice") sessionChannel = "voice";
     await beginHumanTransfer(data, channel);
+    window.location.assign(humanCallUrl(data.transfer));
     return;
   }
   if (channel === "voice") {
@@ -393,6 +394,7 @@ async function deliverTurn(message, channel) {
     else restoreResultPanel();
     if (quoteData.transfer) {
       await beginHumanTransfer(quoteData, channel);
+      window.location.assign(humanCallUrl(quoteData.transfer));
       return;
     }
     if (channel === "voice") await speakIfLive(quoteData.reply);

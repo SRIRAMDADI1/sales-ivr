@@ -6,7 +6,7 @@ from sales_ivr.fixtures.loader import build_initial_state
 from sales_ivr.models import CallSession, CallerUtterance
 from sales_ivr.models.enums import HandoffQueue, Intent
 import sales_ivr.transfer as transfer
-from sales_ivr.transfer import wants_human_agent
+from sales_ivr.transfer import human_transfer_payload, wants_human_agent
 
 
 def _session(text: str, dtmf: str = "") -> CallSession:
@@ -16,6 +16,13 @@ def _session(text: str, dtmf: str = "") -> CallSession:
         utterances=[CallerUtterance(turn=0, text=text)],
         dtmf_digits=dtmf,
     )
+
+
+def test_transfer_payload_includes_links_the_website_can_open():
+    payload = human_transfer_payload()
+    assert payload["tel_url"] == "tel:+16108126519"
+    assert payload["web_call_url"].startswith("https://teams.microsoft.com/l/call/0/0?users=4:")
+    assert "16108126519" in payload["web_call_url"]
 
 
 def test_human_phrases_are_recognized_and_quotes_are_not():

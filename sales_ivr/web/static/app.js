@@ -299,57 +299,45 @@ function endVoice() {
   input.disabled = false;
 }
 
-async function placeCall(button) {
-  if (button) button.textContent = "Opening the call...";
-  const res = await fetch("/api/call/human", { method: "POST" });
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const detail = body.detail || "The call could not be started.";
-    if (button) button.textContent = button.dataset.label || "Call an agent";
-    throw new Error(typeof detail === "string" ? detail : "The call could not be started.");
-  }
-  if (button) button.textContent = `Call ${body.destination_display} again`;
-  addBubble(
-    "assistant",
-    `Opening the call to ${body.destination_display}. If a sign-in window is in front, sign in and the call continues.`
+function humanCallUrl(transfer) {
+  const phone = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (phone) return transfer.tel_url || `tel:${transfer.destination_e164}`;
+  return (
+    transfer.web_call_url ||
+    `https://teams.microsoft.com/l/call/0/0?users=4:${encodeURIComponent(transfer.destination_e164)}`
   );
-  return body;
 }
 
 function addCallLink(transfer) {
   const div = document.createElement("div");
   div.className = "bubble assistant";
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "transfer-call";
-  button.dataset.label = `Call an agent at ${transfer.destination_display}`;
-  button.textContent = button.dataset.label;
-  button.addEventListener("click", async () => {
-    try {
-      await placeCall(button);
-    } catch (err) {
-      addBubble("assistant", err.message);
-    }
-  });
-  div.appendChild(button);
+  const link = document.createElement("a");
+  link.className = "transfer-call";
+  link.href = humanCallUrl(transfer);
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = `Call an agent at ${transfer.destination_display}`;
+  div.appendChild(link);
+  if (!String(link.href).startsWith("tel:")) {
+    const phoneLink = document.createElement("a");
+    phoneLink.className = "transfer-phone";
+    phoneLink.href = transfer.tel_url || `tel:${transfer.destination_e164}`;
+    phoneLink.textContent = `Or dial ${transfer.destination_display}`;
+    div.appendChild(phoneLink);
+  }
   messagesEl.appendChild(div);
   messagesEl.scrollTop = messagesEl.scrollHeight;
-  return button;
+  return link;
 }
 
 async function beginHumanTransfer(data, channel) {
   const transfer = data.transfer;
-  const button = addCallLink(transfer);
+  addCallLink(transfer);
   if (channel === "voice") {
     const spoke = await speakIfLive(data.reply);
     if (!spoke) return;
     humanHold = true;
     setVoiceStatus("hold", `Connecting you to an agent at ${transfer.destination_display}`);
-  }
-  try {
-    await placeCall(button);
-  } catch (err) {
-    addBubble("assistant", err.message);
   }
 }
 

@@ -360,6 +360,15 @@ body {
   opacity: 0.75;
   cursor: progress;
 }
+a.transfer-call {
+  text-decoration: none;
+}
+.transfer-phone {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
 .bubble.user {
   align-self: flex-end;
   background: var(--brand);

@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 from typing import Any
+from urllib.parse import quote
 
 # Live agent line. National form is what we say and show; E.164 is what we dial.
 DEFAULT_HUMAN_AGENT_PHONE = "610-812-6519"
@@ -65,11 +66,15 @@ def human_transfer_payload() -> dict[str, Any]:
     """Dial instructions for the voice client and the handoff record."""
 
     phone = human_agent_phone()
+    e164 = to_e164(phone)
     return {
         "action": "connect_human",
         "status": "on_hold",
-        "destination_e164": to_e164(phone),
+        "destination_e164": e164,
         "destination_display": display_phone(phone),
+        # The visitor's browser opens these. The website server cannot dial a phone.
+        "tel_url": f"tel:{e164}",
+        "web_call_url": f"https://teams.microsoft.com/l/call/0/0?users=4:{quote(e164)}",
     }
 
 

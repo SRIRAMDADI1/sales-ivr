@@ -9,6 +9,8 @@ COPY config.yaml ./config.yaml
 RUN pip install --no-cache-dir .
 
 ENV SALES_IVR_CONFIG_PATH=/app/config.yaml
+ENV METRICS_PORT=8001
 EXPOSE 8000
+EXPOSE 8001
 
 CMD ["uvicorn", "sales_ivr.web.app:app", "--host", "0.0.0.0", "--port", "8000"]

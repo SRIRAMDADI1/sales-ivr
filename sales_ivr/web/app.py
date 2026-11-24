@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hmac
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 
@@ -13,6 +14,7 @@ from pydantic import BaseModel, Field
 
 from sales_ivr.transfer import human_transfer_payload, launch_human_call
 from sales_ivr.web.chat_service import create_chat, get_chat, handle_user_message, run_pending_quote
+from sales_ivr.web.metrics import start_metrics_server
 from sales_ivr.web.pulse_ledger import summary as pulse_summary
 
 # Shared admin gate for the on-page Pulse panel.
@@ -20,10 +22,19 @@ PULSE_ADMIN_PASSWORD = "12345"
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
+
+@asynccontextmanager
+async def _lifespan(_app: FastAPI):
+    # ClusterIP only. The public load balancer does not forward this port.
+    start_metrics_server()
+    yield
+
+
 app = FastAPI(
     title="Firstpass Quotes",
     description="Conversational quote agent backed by the Sales IVR agent pipeline",
     version="0.2.0",
+    lifespan=_lifespan,
 )
 
 

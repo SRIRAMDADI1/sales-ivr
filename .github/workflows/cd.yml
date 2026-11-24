@@ -53,6 +53,35 @@ jobs:
           sed "s/REPLACE_DNS_LABEL/${AZURE_DNS_LABEL}/g" k8s/service.yaml | kubectl apply -f -
           kubectl rollout status deployment/firstpass-quotes --timeout=180s
 
+      - name: Apply Grafana and Prometheus
+        env:
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [ -n "${GRAFANA_ADMIN_PASSWORD}" ]; then
+            kubectl create secret generic firstpass-grafana \
+              --from-literal=admin-user=admin \
+              --from-literal=admin-password="${GRAFANA_ADMIN_PASSWORD}" \
+              --dry-run=client -o yaml | kubectl apply -f -
+          fi
+          if ! kubectl get secret firstpass-grafana >/dev/null 2>&1; then
+            echo "Secret firstpass-grafana is missing. Set GitHub secret GRAFANA_ADMIN_PASSWORD, or apply secrets/firstpass-grafana.yaml. Skipping Grafana so the quote app still ships."
+            exit 0
+          fi
+          grafana_dns="firstpass-grafana-${AZURE_DNS_LABEL#firstpass-chat-}"
+          grafana_root="http://${grafana_dns}.${AZURE_LOCATION}.cloudapp.azure.com/"
+          kubectl apply -f k8s/metrics-service.yaml
+          kubectl apply -f k8s/prometheus.yaml
+          kubectl create configmap firstpass-grafana-dashboard \
+            --from-file=firstpass.json=k8s/grafana/firstpass.json \
+            --dry-run=client -o yaml | kubectl apply -f -
+          sed "s|REPLACE_GRAFANA_DNS|${grafana_dns}|g; s|REPLACE_GRAFANA_ROOT|${grafana_root}|g" k8s/grafana.yaml | kubectl apply -f -
+          kubectl rollout status deployment/firstpass-prometheus --timeout=180s
+          kubectl rollout status deployment/firstpass-grafana --timeout=180s
+          curl --fail --silent --show-error --retry 18 --retry-delay 10 --retry-all-errors \
+            "${grafana_root}api/health"
+          echo
+
       - name: Check public health
         run: |
           set -euo pipefail

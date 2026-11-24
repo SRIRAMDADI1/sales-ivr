@@ -1,0 +1,139 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: firstpass-grafana-datasources
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        access: proxy
+        url: http://firstpass-prometheus:9090
+        isDefault: true
+        editable: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: firstpass-grafana-providers
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: Firstpass
+        orgId: 1
+        folder: Firstpass
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /etc/grafana/dashboards
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firstpass-grafana
+  labels:
+    app: firstpass-grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: firstpass-grafana
+  template:
+    metadata:
+      labels:
+        app: firstpass-grafana
+    spec:
+      securityContext:
+        runAsUser: 472
+        runAsGroup: 472
+        fsGroup: 472
+        runAsNonRoot: true
+      containers:
+        - name: grafana
+          image: grafana/grafana:11.5.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: firstpass-grafana
+                  key: admin-user
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: firstpass-grafana
+                  key: admin-password
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "false"
+            - name: GF_ANALYTICS_REPORTING_ENABLED
+              value: "false"
+            - name: GF_ANALYTICS_CHECK_FOR_UPDATES
+              value: "false"
+            - name: GF_SERVER_ROOT_URL
+              value: REPLACE_GRAFANA_ROOT
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/grafana
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: providers
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboards
+              mountPath: /etc/grafana/dashboards
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: datasources
+          configMap:
+            name: firstpass-grafana-datasources
+        - name: providers
+          configMap:
+            name: firstpass-grafana-providers
+        - name: dashboards
+          configMap:
+            name: firstpass-grafana-dashboard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: firstpass-grafana
+  labels:
+    app: firstpass-grafana
+  annotations:
+    service.beta.kubernetes.io/azure-dns-label-name: REPLACE_GRAFANA_DNS
+    service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /api/health
+spec:
+  type: LoadBalancer
+  selector:
+    app: firstpass-grafana
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

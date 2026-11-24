@@ -77,6 +77,13 @@ def record_usage(usage: LLMUsage) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as handle:
             handle.write(line + "\n")
+    try:
+        from sales_ivr.web.metrics import observe_llm
+
+        observe_llm(usage, float(event["cost_usd"]))
+    except Exception:
+        # Metrics are a second view of the ledger. A scrape problem must not drop the quote.
+        return
 
 
 def _load_events() -> list[dict[str, Any]]:
@@ -98,12 +105,93 @@ def _load_events() -> list[dict[str, Any]]:
     return events
 
 
+# Pulse and the MCP server both cap how many raw calls they return.
+_MAX_RECENT = 50
+
+
 def _percentile(values: list[int], fraction: float) -> int:
     if not values:
         return 0
     ordered = sorted(values)
     index = max(0, min(len(ordered) - 1, int(round((len(ordered) - 1) * fraction))))
     return int(ordered[index])
+
+
+def _cap_limit(limit: int) -> int:
+    return max(1, min(int(limit), _MAX_RECENT))
+
+
+def _newest(events: list[dict[str, Any]], limit: int) -> list[dict[str, Any]]:
+    return list(reversed(events[-_cap_limit(limit) :]))
+
+
+def recent_calls(limit: int = 12) -> list[dict[str, Any]]:
+    """Newest ledger rows first. `limit` is clamped to 1..50."""
+
+    return _newest(_load_events(), limit)
+
+
+def agent_usage(agent_name: str, recent_limit: int = 12) -> dict[str, Any]:
+    """Roll up one agent. Names match case-insensitively."""
+
+    query = agent_name.strip()
+    events = _load_events()
+    names = sorted({str(item.get("agent_name") or "unknown") for item in events})
+    matched = [
+        item
+        for item in events
+        if query and str(item.get("agent_name") or "").lower() == query.lower()
+    ]
+    if not matched:
+        suggestions = [name for name in names if query and query.lower() in name.lower()]
+        return {
+            "found": False,
+            "query": query,
+            "agents": names,
+            "suggestions": suggestions,
+        }
+
+    prompt = sum(int(item.get("prompt_tokens") or 0) for item in matched)
+    completion = sum(int(item.get("completion_tokens") or 0) for item in matched)
+    total = sum(int(item.get("total_tokens") or 0) for item in matched)
+    cost = round(sum(float(item.get("cost_usd") or 0) for item in matched), 8)
+    latencies = [int(item.get("latency_ms") or 0) for item in matched]
+    tool_calls = sum(int(item.get("tool_calls") or 0) for item in matched)
+    by_model: dict[str, dict[str, Any]] = {}
+    for item in matched:
+        model = str(item.get("model") or "unknown")
+        mix = by_model.setdefault(
+            model,
+            {"model": model, "calls": 0, "total_tokens": 0, "cost_usd": 0.0},
+        )
+        mix["calls"] += 1
+        mix["total_tokens"] += int(item.get("total_tokens") or 0)
+        mix["cost_usd"] += float(item.get("cost_usd") or 0)
+    models = [
+        {
+            "model": mix["model"],
+            "calls": mix["calls"],
+            "total_tokens": mix["total_tokens"],
+            "cost_usd": round(mix["cost_usd"], 8),
+        }
+        for mix in by_model.values()
+    ]
+    models.sort(key=lambda row: row["total_tokens"], reverse=True)
+
+    return {
+        "found": True,
+        "agent_name": str(matched[-1].get("agent_name") or query),
+        "calls": len(matched),
+        "prompt_tokens": prompt,
+        "completion_tokens": completion,
+        "total_tokens": total,
+        "cost_usd": cost,
+        "avg_latency_ms": int(sum(latencies) / len(latencies)),
+        "p95_latency_ms": _percentile(latencies, 0.95),
+        "tool_calls": tool_calls,
+        "models": models,
+        "recent": _newest(matched, recent_limit),
+    }
 
 
 def summary() -> dict[str, Any]:
@@ -180,7 +268,7 @@ def summary() -> dict[str, Any]:
         )
     models.sort(key=lambda row: row["total_tokens"], reverse=True)
 
-    recent = list(reversed(events[-12:]))
+    recent = _newest(events, 12)
     return {
         "call_count": len(events),
         "prompt_tokens": prompt,

@@ -21,9 +21,13 @@ spec:
           ports:
             - name: http
               containerPort: 8000
+            - name: metrics
+              containerPort: 8001
           env:
             - name: SALES_IVR_CONFIG_PATH
               value: /app/config.yaml
+            - name: METRICS_PORT
+              value: "8001"
             - name: AZURE_OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:

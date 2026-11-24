@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "pulse": {
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "args": ["-m", "sales_ivr.mcp.pulse"]
+    }
+  }
+}

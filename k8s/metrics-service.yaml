@@ -1,0 +1,16 @@
+# Headless so Prometheus DNS discovery gets one address per pod.
+# ClusterIP (not a load balancer): /metrics stays off the public IP.
+apiVersion: v1
+kind: Service
+metadata:
+  name: firstpass-quotes-metrics
+  labels:
+    app: firstpass-quotes
+spec:
+  clusterIP: None
+  selector:
+    app: firstpass-quotes
+  ports:
+    - name: metrics
+      port: 8001
+      targetPort: metrics
